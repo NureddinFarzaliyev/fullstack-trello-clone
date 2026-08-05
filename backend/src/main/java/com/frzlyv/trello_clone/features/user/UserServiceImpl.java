@@ -60,4 +60,9 @@ public class UserServiceImpl implements UserService {
         .build();
   }
 
+  @Override
+  public UserDto me(UserEntity userEntity) {
+    return userMapper.toDto(userEntity);
+  }
+
 }
