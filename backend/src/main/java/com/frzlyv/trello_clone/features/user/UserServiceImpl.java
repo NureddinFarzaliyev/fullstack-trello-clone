@@ -1,5 +1,6 @@
 package com.frzlyv.trello_clone.features.user;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,8 +13,10 @@ import com.frzlyv.trello_clone.features.user.domain.UserDto;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 import com.frzlyv.trello_clone.security.JwtService;
 import com.frzlyv.trello_clone.shared.Mapper;
+import com.frzlyv.trello_clone.shared.events.UserRegisterEvent;
 import com.frzlyv.trello_clone.shared.exceptions.UserAlreadyExistsException;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -28,8 +31,10 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
   private final JwtService jwtService;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
+  @Transactional
   public UserDto register(RegisterDto registerDto) {
     if (userRepository.existsByEmail(registerDto.getEmail())) {
       throw new UserAlreadyExistsException("User with this email already exists.");
@@ -46,6 +51,9 @@ public class UserServiceImpl implements UserService {
         .build();
 
     UserEntity savedUser = userRepository.save(userEntity);
+
+    eventPublisher.publishEvent(new UserRegisterEvent(this, savedUser));
+
     return userMapper.toDto(savedUser);
   }
 
