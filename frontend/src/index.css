@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 :root {
   /* Colors are created with https://colorffy.com/dark-theme-generator */
