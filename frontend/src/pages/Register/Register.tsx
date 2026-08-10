@@ -3,6 +3,8 @@ import { useRegister } from "../../api/queries/useAuthQuery";
 import type { RegisterRequestBody } from "../../api/openapi-types";
 import TextInput from "../../shared/ui/form/TextInput";
 import Button from "../../shared/ui/form/Button";
+import { Link, useNavigate } from "react-router";
+import { useToast } from "../../stores/toast.store";
 
 const Register = () => {
   const { mutate, isPending } = useRegister();
@@ -13,10 +15,19 @@ const Register = () => {
     username: "",
   });
 
+  const navigate = useNavigate();
+  const { addToast } = useToast();
+
   const onSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     mutate(data, {
-      onSuccess: (data) => console.log(data),
+      onSuccess: () => {
+        addToast({
+          type: "success",
+          content: "Registered successfully, please login",
+        });
+        navigate("/login");
+      },
     });
   };
 
@@ -28,7 +39,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center w-full h-dvh">
+    <div className="flex items-center justify-center w-full h-dvh flex-col gap-3">
       <form onSubmit={onSubmit} className="flex gap-2 flex-col">
         <TextInput
           type="email"
@@ -50,6 +61,9 @@ const Register = () => {
         />
         <Button isLoading={isPending} type="submit" content="Register" />
       </form>
+      <Link to="/login" className="text-sm underline">
+        Already have an account? Login
+      </Link>
     </div>
   );
 };
