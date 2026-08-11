@@ -32,6 +32,13 @@ public class GlobalExceptionHandler {
         .body(buildErrorResponse(List.of(ex.getMessage())));
   }
 
+  @ExceptionHandler(EntityNotFoundException.class)
+  public ResponseEntity<Map<String, Object>> handleEntityNotFound(EntityNotFoundException ex) {
+    return ResponseEntity
+        .status(HttpStatus.NOT_FOUND)
+        .body(buildErrorResponse(List.of(ex.getMessage())));
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
     List<String> errors = ex.getBindingResult().getFieldErrors().stream()

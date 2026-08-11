@@ -6,12 +6,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.frzlyv.trello_clone.features.board.domain.BoardDto;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
 import com.frzlyv.trello_clone.features.boardMember.BoardMemberRepository;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardMemberEntity;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardRole;
+import com.frzlyv.trello_clone.features.user.domain.UserEntity;
+import com.frzlyv.trello_clone.shared.Mapper;
 import com.frzlyv.trello_clone.shared.events.UserRegisterEvent;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -23,6 +27,7 @@ public class BoardServiceImpl implements BoardService {
 
   private final BoardRepository boardRepository;
   private final BoardMemberRepository boardMemberRepository;
+  private final Mapper<BoardEntity, BoardDto> modelMapper;
 
   @Override
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -42,6 +47,17 @@ public class BoardServiceImpl implements BoardService {
         .build();
 
     boardMemberRepository.save(boardMember);
+  }
+
+  @Override
+  public BoardDto getDefaultBoard(UserEntity user) {
+    BoardMemberEntity boardMemberEntity = boardMemberRepository.findOneByUserId(user.getId())
+        .orElseThrow(() -> new EntityNotFoundException("Board not found."));
+
+    BoardEntity boardEntity = boardRepository.findById(boardMemberEntity.getBoard().getId())
+        .orElseThrow(() -> new EntityNotFoundException("Board not found."));
+
+    return modelMapper.toDto(boardEntity);
   }
 
 }
