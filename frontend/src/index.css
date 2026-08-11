@@ -52,3 +52,17 @@
   --info-a10: #a1dbff;
   --info-a20: #b9e4ff;
 }
+
+@theme {
+  --animate-fade-in: fade-in 0.5s;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0%;
+  }
+
+  to {
+    opacity: 100%;
+  }
+}

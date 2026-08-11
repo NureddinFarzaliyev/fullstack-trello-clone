@@ -9,3 +9,5 @@ export type RegisterRequestBody =
   paths["/api/v1/auth/register"]["post"]["requestBody"]["content"]["application/json"];
 
 export type Me = components["schemas"]["UserDto"];
+
+export type Board = components["schemas"]["BoardDto"];
