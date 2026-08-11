@@ -44,4 +44,8 @@ public class BoardEntity {
   @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
   List<BoardMemberEntity> members = new ArrayList<>();
 
+  @Builder.Default
+  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+  List<BoardMemberEntity> columns = new ArrayList<>();
+
 }
