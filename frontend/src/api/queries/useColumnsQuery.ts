@@ -127,3 +127,44 @@ export const useCreateColumn = () => {
     },
   });
 };
+
+const deleteColumn = async ({
+  boardId,
+  columnId,
+}: {
+  boardId: string;
+  columnId: number;
+}) => {
+  const { error } = await openApiClient.DELETE(
+    "/api/v1/boards/{boardId}/columns/{columnId}",
+    {
+      params: {
+        path: {
+          boardId,
+          columnId,
+        },
+      },
+    },
+  );
+
+  if (error) handleQueryError(error);
+};
+
+export const useDeleteColumn = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      boardId,
+      columnId,
+    }: {
+      boardId: string;
+      columnId: number;
+    }) => deleteColumn({ boardId, columnId }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),
+      });
+    },
+  });
+};
