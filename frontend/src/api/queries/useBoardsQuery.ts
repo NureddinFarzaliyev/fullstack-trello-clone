@@ -16,3 +16,24 @@ export const useDefaultBoard = () => {
     queryFn: getDefaultBoard,
   });
 };
+
+const getBoardById = async (boardId: string) => {
+  const { data, error } = await openApiClient.GET("/api/v1/boards/{boardId}", {
+    params: {
+      path: {
+        boardId,
+      },
+    },
+  });
+
+  if (error) handleQueryError(error);
+  return data;
+};
+
+export const useBoard = (boardId: string) => {
+  return useQuery({
+    queryKey: boardQueryKeys.boardById(boardId),
+    queryFn: () => getBoardById(boardId),
+    enabled: boardId !== "",
+  });
+};

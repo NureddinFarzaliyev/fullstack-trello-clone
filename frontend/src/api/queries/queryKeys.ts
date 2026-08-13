@@ -5,4 +5,5 @@ export const authQueryKeys = {
 export const boardQueryKeys = {
   all: ["boards"] as const,
   default: () => [...boardQueryKeys.all, "default"],
+  boardById: (boardId: string) => [...boardQueryKeys.all, boardId],
 };

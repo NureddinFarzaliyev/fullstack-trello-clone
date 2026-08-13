@@ -9,6 +9,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Me from "./pages/Me/Me";
 import ProtectedLayout from "./layouts/ProtectedLayout";
+import Board from "./pages/Board/Board";
 
 const App = () => {
   const router = createBrowserRouter(
@@ -21,6 +22,7 @@ const App = () => {
         </Route>
         <Route element={<ProtectedLayout />}>
           <Route path="/me" element={<Me />} />
+          <Route path="/boards/:id" element={<Board />} />
         </Route>
       </Route>,
     ),
