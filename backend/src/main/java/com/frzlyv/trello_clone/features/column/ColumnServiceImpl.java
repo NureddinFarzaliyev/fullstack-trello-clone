@@ -18,6 +18,7 @@ import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 import com.frzlyv.trello_clone.shared.Mapper;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,10 +38,14 @@ public class ColumnServiceImpl implements ColumnService {
     BoardEntity board = boardRepository.findById(boardId)
         .orElseThrow(() -> new EntityNotFoundException());
 
+    Long nextPosition = columnRepository.findFirstByBoardIdOrderByPositionDesc(boardId)
+        .map(ColumnEntity::getPosition)
+        .orElse(0L) + 1;
+
     ColumnEntity columnEntity = ColumnEntity.builder()
         .board(board)
         .title(body.getTitle())
-        .position(body.getPosition())
+        .position(nextPosition)
         .build();
 
     ColumnEntity savedColumnEntity = columnRepository.save(columnEntity);
@@ -51,7 +56,7 @@ public class ColumnServiceImpl implements ColumnService {
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
   public Page<ColumnDto> getBoardColumns(UUID boardId, Pageable pageable) {
-    Page<ColumnEntity> columnEntities = columnRepository.findAllByBoardId(boardId, pageable);
+    Page<ColumnEntity> columnEntities = columnRepository.findAllByBoardIdOrderByPositionAsc(boardId, pageable);
     return columnEntities.map(modelMapper::toDto);
   }
 
@@ -63,6 +68,7 @@ public class ColumnServiceImpl implements ColumnService {
 
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  @Transactional
   public ColumnDto updateColumn(UUID boardId, Long ColumnId, UpdateColumnRequestDto body) {
     ColumnEntity columnEntity = columnRepository.findById(ColumnId)
         .orElseThrow(() -> new EntityNotFoundException());
@@ -71,12 +77,28 @@ public class ColumnServiceImpl implements ColumnService {
       columnEntity.setTitle(body.getTitle());
     }
 
-    if (body.getPosition() != null) {
-      columnEntity.setPosition(body.getPosition());
+    Long newPos = body.getPosition();
+    if (newPos != null && !newPos.equals(columnEntity.getPosition())) {
+
+      Long currentPos = columnEntity.getPosition();
+      Long maxPos = columnRepository.findMaxPositionByBoardId(boardId);
+
+      // [0, maxPos]
+      newPos = Math.max(0L, Math.min(newPos, maxPos));
+
+      if (!newPos.equals(currentPos)) {
+        if (newPos < currentPos) {
+          columnRepository.shiftPositionsRight(boardId, newPos, currentPos);
+        } else {
+          columnRepository.shiftPositionsLeft(boardId, currentPos, newPos);
+        }
+
+        columnEntity.setPosition(newPos);
+      }
+
     }
 
-    ColumnEntity updatedColumnEntity = columnRepository.save(columnEntity);
-    return modelMapper.toDto(updatedColumnEntity);
+    return modelMapper.toDto(columnEntity);
   }
 
 }
