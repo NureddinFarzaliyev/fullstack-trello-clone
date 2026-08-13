@@ -11,3 +11,8 @@ export type RegisterRequestBody =
 export type Me = components["schemas"]["UserDto"];
 
 export type Board = components["schemas"]["BoardDto"];
+
+export type Column = components["schemas"]["ColumnDto"];
+
+export type UpdateColumnRequestBody =
+  components["schemas"]["UpdateColumnRequestDto"];

@@ -1,8 +1,13 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { handleQueryError } from "../../shared/utils/errors/errorHandler";
 import { DEFAULT_PAGE_SIZE } from "../../shared/utils/pagination";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
+import type { UpdateColumnRequestBody } from "../openapi-types";
 
 const getBoardColumns = async (boardId: string, page: number) => {
   const { data, error } = await openApiClient.GET(
@@ -37,6 +42,49 @@ export const useBoardColumns = (boardId: string) => {
       return lastPageNumber !== null && lastPageNumber !== undefined
         ? lastPageNumber + 1
         : undefined;
+    },
+  });
+};
+
+const updateColumn = async (
+  boardId: string,
+  columnId: number,
+  body: UpdateColumnRequestBody,
+) => {
+  const { data, error } = await openApiClient.PATCH(
+    "/api/v1/boards/{boardId}/columns/{columnId}",
+    {
+      params: {
+        path: {
+          boardId,
+          columnId,
+        },
+      },
+      body,
+    },
+  );
+
+  if (error) handleQueryError(error);
+  return data;
+};
+
+export const useUpdateColumn = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      boardId,
+      columnId,
+      body,
+    }: {
+      boardId: string;
+      columnId: number;
+      body: UpdateColumnRequestBody;
+    }) => updateColumn(boardId, columnId, body),
+    onSuccess: (variables) => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),
+      });
     },
   });
 };
