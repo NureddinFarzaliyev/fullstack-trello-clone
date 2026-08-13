@@ -1,7 +1,10 @@
 package com.frzlyv.trello_clone.features.column;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +45,13 @@ public class ColumnServiceImpl implements ColumnService {
     ColumnEntity savedColumnEntity = columnRepository.save(columnEntity);
 
     return modelMapper.toDto(savedColumnEntity);
+  }
+
+  @Override
+  @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  public Page<ColumnDto> getBoardColumns(UUID boardId, Pageable pageable) {
+    Page<ColumnEntity> columnEntities = columnRepository.findAllByBoardId(boardId, pageable);
+    return columnEntities.map(modelMapper::toDto);
   }
 
 }
