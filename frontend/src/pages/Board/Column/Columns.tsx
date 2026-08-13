@@ -1,14 +1,14 @@
-import { useBoardColumns } from "../../api/queries/useColumnsQuery";
-import HorizontalFullSpinner from "../../shared/ui/loading/HorizontalFullSpinner";
+import { useBoardColumns } from "../../../api/queries/useColumnsQuery";
+import HorizontalFullSpinner from "../../../shared/ui/loading/HorizontalFullSpinner";
 import { useRef } from "react";
-import InfiniteScrollTrigger from "../../shared/ui/infiniteScroll/InfiniteScrollTrigger";
-import { useIntersectionObserver } from "../../shared/hooks/useIntersectionObserver";
-import FadeIn from "../../shared/ui/animation/FadeIn";
-import Section from "../../shared/ui/section/Section";
+import InfiniteScrollTrigger from "../../../shared/ui/infiniteScroll/InfiniteScrollTrigger";
+import { useIntersectionObserver } from "../../../shared/hooks/useIntersectionObserver";
+import FadeIn from "../../../shared/ui/animation/FadeIn";
+import Section from "../../../shared/ui/section/Section";
 import ColumnCard from "./ColumnCard";
 import { DragDropProvider } from "@dnd-kit/react";
 import { isSortable } from "@dnd-kit/react/sortable";
-import { useUpdateColumn } from "../../api/queries/useColumnsQuery";
+import { useUpdateColumn } from "../../../api/queries/useColumnsQuery";
 import CreateColumn from "./CreateColumn";
 
 const Columns = ({ id }: { id: string }) => {
@@ -27,7 +27,7 @@ const Columns = ({ id }: { id: string }) => {
     fetchNextPage,
     !!hasNextPage && !isFetchingNextPage,
   );
-  const { mutateAsync: updateColumn } = useUpdateColumn();
+  const { mutateAsync: updateColumn, isPending } = useUpdateColumn();
 
   const columns = columnsPages?.pages.flatMap((page) => page.content) ?? [];
 
@@ -48,9 +48,14 @@ const Columns = ({ id }: { id: string }) => {
             }
           }}
         >
-          <div className="flex gap-4 overflow-x-auto">
+          <div className="flex gap-4 overflow-x-auto items-start">
             {columns.map((c, i) => (
-              <ColumnCard key={c?.id} column={c} index={i} />
+              <ColumnCard
+                key={c?.id}
+                column={c}
+                index={i}
+                dragDisabled={isPending}
+              />
             ))}
             <CreateColumn boardId={id} />
             <InfiniteScrollTrigger

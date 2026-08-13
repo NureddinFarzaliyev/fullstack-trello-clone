@@ -1,9 +1,9 @@
 import { PlusIcon } from "lucide-react";
-import Modal from "../../shared/ui/modal/Modal";
+import Modal from "../../../shared/ui/modal/Modal";
 import { useState } from "react";
-import TextInput from "../../shared/ui/form/TextInput";
-import { useCreateColumn } from "../../api/queries/useColumnsQuery";
-import Spinner from "../../shared/ui/loading/Spinner";
+import TextInput from "../../../shared/ui/form/TextInput";
+import { useCreateColumn } from "../../../api/queries/useColumnsQuery";
+import Spinner from "../../../shared/ui/loading/Spinner";
 
 const CreateColumn = ({ boardId }: { boardId: string }) => {
   const [columnName, setColumnName] = useState("");
@@ -18,7 +18,7 @@ const CreateColumn = ({ boardId }: { boardId: string }) => {
     <Modal
       button={
         <button
-          className="h-14 w-14 bg-(--surface-a20) shrink-0 cursor-pointer hover:bg-(--surface-a10) transition duration-100"
+          className="h-12 w-12 bg-(--surface-a20) shrink-0 cursor-pointer hover:bg-(--surface-a10) transition duration-100"
           disabled={isPending}
         >
           {isPending ? <Spinner /> : <PlusIcon className="mx-auto my-auto" />}

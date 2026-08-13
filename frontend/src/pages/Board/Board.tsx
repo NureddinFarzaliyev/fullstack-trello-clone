@@ -4,7 +4,7 @@ import FullPageSpinner from "../../shared/ui/loading/FullPageSpinner";
 import Section from "../../shared/ui/section/Section";
 import { ChevronLeft } from "lucide-react";
 import FadeIn from "../../shared/ui/animation/FadeIn";
-import Columns from "./Columns";
+import Columns from "./Column/Columns";
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
