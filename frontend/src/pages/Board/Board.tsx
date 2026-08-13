@@ -4,10 +4,32 @@ import FullPageSpinner from "../../shared/ui/loading/FullPageSpinner";
 import Section from "../../shared/ui/section/Section";
 import { ChevronLeft } from "lucide-react";
 import FadeIn from "../../shared/ui/animation/FadeIn";
+import { useBoardColumns } from "../../api/queries/useColumnsQuery";
+import HorizontalFullSpinner from "../../shared/ui/loading/HorizontalFullSpinner";
+import { useRef } from "react";
+import InfiniteScrollTrigger from "../../shared/ui/infiniteScroll/InfiniteScrollTrigger";
+import { useIntersectionObserver } from "../../shared/hooks/useIntersectionObserver";
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isPending } = useBoard(id ?? "");
+  const {
+    data: columnsPages,
+    isPending: isColumnsPending,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useBoardColumns(id ?? "");
+
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  useIntersectionObserver(
+    loadMoreRef,
+    fetchNextPage,
+    !!hasNextPage && !isFetchingNextPage,
+  );
+
+  const columns = columnsPages?.pages.flatMap((page) => page.content) ?? [];
 
   return isPending ? (
     <FullPageSpinner />
@@ -20,6 +42,23 @@ const Board = () => {
           </Link>
           <h3 className="text-xl">{data?.title}</h3>
         </div>
+        {isColumnsPending ? (
+          <HorizontalFullSpinner />
+        ) : (
+          <Section>
+            <FadeIn>
+              {columns.map((c) => (
+                <div>{c?.title}</div>
+              ))}
+              <InfiniteScrollTrigger
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage}
+                hasData={!!columns?.length}
+                ref={loadMoreRef}
+              />
+            </FadeIn>
+          </Section>
+        )}
       </Section>
     </FadeIn>
   );
