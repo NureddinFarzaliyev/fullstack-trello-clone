@@ -13,6 +13,7 @@ import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
 import com.frzlyv.trello_clone.features.column.domain.ColumnDto;
 import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 import com.frzlyv.trello_clone.features.column.domain.CreateColumnRequestDto;
+import com.frzlyv.trello_clone.features.column.domain.UpdateColumnRequestDto;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 import com.frzlyv.trello_clone.shared.Mapper;
 
@@ -52,6 +53,30 @@ public class ColumnServiceImpl implements ColumnService {
   public Page<ColumnDto> getBoardColumns(UUID boardId, Pageable pageable) {
     Page<ColumnEntity> columnEntities = columnRepository.findAllByBoardId(boardId, pageable);
     return columnEntities.map(modelMapper::toDto);
+  }
+
+  @Override
+  @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  public void deleteColumn(UUID boardId, Long columnId) {
+    columnRepository.deleteById(columnId);
+  }
+
+  @Override
+  @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  public ColumnDto updateColumn(UUID boardId, Long ColumnId, UpdateColumnRequestDto body) {
+    ColumnEntity columnEntity = columnRepository.findById(ColumnId)
+        .orElseThrow(() -> new EntityNotFoundException());
+
+    if (body.getTitle() != null) {
+      columnEntity.setTitle(body.getTitle());
+    }
+
+    if (body.getPosition() != null) {
+      columnEntity.setPosition(body.getPosition());
+    }
+
+    ColumnEntity updatedColumnEntity = columnRepository.save(columnEntity);
+    return modelMapper.toDto(updatedColumnEntity);
   }
 
 }
