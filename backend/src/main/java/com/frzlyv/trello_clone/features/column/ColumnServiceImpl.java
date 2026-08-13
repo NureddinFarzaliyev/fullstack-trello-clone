@@ -62,8 +62,9 @@ public class ColumnServiceImpl implements ColumnService {
 
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  @Transactional
   public void deleteColumn(UUID boardId, Long columnId) {
-    columnRepository.deleteById(columnId);
+    columnRepository.deleteByIdAndBoardId(columnId, boardId);
   }
 
   @Override
