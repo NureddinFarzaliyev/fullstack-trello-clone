@@ -18,4 +18,6 @@ public interface BoardMemberRepository extends JpaRepository<BoardMemberEntity, 
 
   Optional<BoardMemberEntity> findOneByBoardIdAndUserId(UUID boardId, Long userId);
 
+  Boolean existsByBoardIdAndUserId(UUID boardId, Long userId);
+
 }
