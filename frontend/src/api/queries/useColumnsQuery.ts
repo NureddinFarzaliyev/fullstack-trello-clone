@@ -7,7 +7,10 @@ import { handleQueryError } from "../../shared/utils/errors/errorHandler";
 import { DEFAULT_PAGE_SIZE } from "../../shared/utils/pagination";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
-import type { UpdateColumnRequestBody } from "../openapi-types";
+import type {
+  CreateColumnRequestBody,
+  UpdateColumnRequestBody,
+} from "../openapi-types";
 
 const getBoardColumns = async (boardId: string, page: number) => {
   const { data, error } = await openApiClient.GET(
@@ -81,6 +84,42 @@ export const useUpdateColumn = () => {
       columnId: number;
       body: UpdateColumnRequestBody;
     }) => updateColumn(boardId, columnId, body),
+    onSuccess: (variables) => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),
+      });
+    },
+  });
+};
+
+const createColumn = async (boardId: string, body: CreateColumnRequestBody) => {
+  const { data, error } = await openApiClient.POST(
+    "/api/v1/boards/{boardId}/columns",
+    {
+      params: {
+        path: {
+          boardId,
+        },
+      },
+      body,
+    },
+  );
+
+  if (error) handleQueryError(error);
+  return data;
+};
+
+export const useCreateColumn = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      boardId,
+      body,
+    }: {
+      boardId: string;
+      body: CreateColumnRequestBody;
+    }) => createColumn(boardId, body),
     onSuccess: (variables) => {
       queryClient.invalidateQueries({
         queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),

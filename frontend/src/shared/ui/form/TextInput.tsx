@@ -4,12 +4,14 @@ const TextInput = ({
   name,
   onChange,
   className,
+  value,
 }: {
   type: "text" | "email" | "password";
-  placeholder: string;
+  placeholder?: string;
   name: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
+  value?: string;
 }) => {
   return (
     <input
@@ -18,6 +20,7 @@ const TextInput = ({
       placeholder={placeholder}
       name={name}
       onChange={onChange}
+      value={value}
     />
   );
 };

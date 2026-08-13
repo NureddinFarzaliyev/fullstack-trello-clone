@@ -16,3 +16,6 @@ export type Column = components["schemas"]["ColumnDto"];
 
 export type UpdateColumnRequestBody =
   components["schemas"]["UpdateColumnRequestDto"];
+
+export type CreateColumnRequestBody =
+  components["schemas"]["CreateColumnRequestDto"];
