@@ -1,5 +1,8 @@
 package com.frzlyv.trello_clone.features.board;
 
+import java.util.UUID;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +59,15 @@ public class BoardServiceImpl implements BoardService {
 
     BoardEntity boardEntity = boardRepository.findById(boardMemberEntity.getBoard().getId())
         .orElseThrow(() -> new EntityNotFoundException("Board not found."));
+
+    return modelMapper.toDto(boardEntity);
+  }
+
+  @Override
+  @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  public BoardDto getBoardById(UUID boardId) {
+    BoardEntity boardEntity = boardRepository.findById(boardId)
+        .orElseThrow(() -> new EntityNotFoundException());
 
     return modelMapper.toDto(boardEntity);
   }

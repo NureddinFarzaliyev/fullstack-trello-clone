@@ -1,7 +1,10 @@
 package com.frzlyv.trello_clone.features.board;
 
+import java.util.UUID;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +26,11 @@ public class BoardController {
   @GetMapping("/default")
   BoardDto getDefaultBoard(@AuthenticationPrincipal UserEntity userEntity) {
     return boardService.getDefaultBoard(userEntity);
+  }
+
+  @GetMapping("/{boardId}")
+  BoardDto getBoardById(@PathVariable UUID boardId) {
+    return boardService.getBoardById(boardId);
   }
 
 }
