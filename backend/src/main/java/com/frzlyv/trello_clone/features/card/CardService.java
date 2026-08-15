@@ -15,4 +15,6 @@ public interface CardService {
 
   void deleteCard(UUID boardId, Long columnId, Long cardId);
 
+  CardDto updateCard(UUID boardId, Long columnId, Long cardId, UpdateCardRequestDto body);
+
 }

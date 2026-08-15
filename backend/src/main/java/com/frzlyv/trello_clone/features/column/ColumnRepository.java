@@ -23,6 +23,8 @@ public interface ColumnRepository extends JpaRepository<ColumnEntity, Long> {
 
   Optional<ColumnEntity> findFirstByBoardIdOrderByPositionDesc(UUID boardId);
 
+  Optional<ColumnEntity> findByIdAndBoardId(Long id, UUID boardId);
+
   void deleteByIdAndBoardId(Long id, UUID boardId);
 
   @Query("SELECT COALESCE(MAX(c.position),0) FROM ColumnEntity c WHERE c.board.id = :boardId")
