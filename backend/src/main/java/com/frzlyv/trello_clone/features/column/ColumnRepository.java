@@ -38,4 +38,6 @@ public interface ColumnRepository extends JpaRepository<ColumnEntity, Long> {
       "WHERE c.board.id = :boardId AND c.position > :start AND c.position <= :end")
   void shiftPositionsLeft(@Param("boardId") UUID boardId, @Param("start") Long start, @Param("end") Long end);
 
+  boolean existsByIdAndBoardId(Long id, UUID boardId);
+
 }

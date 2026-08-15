@@ -2,7 +2,11 @@ package com.frzlyv.trello_clone.features.column.domain;
 
 import jakarta.persistence.Column;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
+import com.frzlyv.trello_clone.features.card.domain.CardEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +15,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,5 +47,9 @@ public class ColumnEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "board_id", nullable = false)
   BoardEntity board;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "column", cascade = CascadeType.ALL, orphanRemoval = true)
+  List<CardEntity> cards = new ArrayList<>();
 
 }

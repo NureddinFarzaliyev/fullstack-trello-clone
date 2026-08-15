@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.frzlyv.trello_clone.features.column.ColumnRepository;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class BoardSecurityEvaluator {
 
   private final BoardMemberRepository boardMemberRepository;
+  private final ColumnRepository columnRepository;
 
   public boolean hasBoardAccess(UUID boardId) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -27,6 +29,14 @@ public class BoardSecurityEvaluator {
 
     UserEntity user = (UserEntity) authentication.getPrincipal();
     return boardMemberRepository.existsByBoardIdAndUserId(boardId, user.getId());
+  }
+
+  public boolean hasColumnAccess(UUID boardId, Long columnId) {
+    if (!hasBoardAccess(boardId)) {
+      return false;
+    }
+
+    return columnRepository.existsByIdAndBoardId(columnId, boardId);
   }
 
 }
