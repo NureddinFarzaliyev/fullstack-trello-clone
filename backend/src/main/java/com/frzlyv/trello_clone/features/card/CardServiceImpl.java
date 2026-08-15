@@ -13,6 +13,7 @@ import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 import com.frzlyv.trello_clone.shared.Mapper;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -49,6 +50,13 @@ public class CardServiceImpl implements CardService {
 
     return modelMapper.toDto(savedCard);
 
+  }
+
+  @Override
+  @PreAuthorize("@boardSecurity.hasColumnAccess(#boardId, #columnId)")
+  @Transactional
+  public void deleteCard(UUID boardId, Long columnId, Long cardId) {
+    cardRepository.deleteByIdAndColumnId(cardId, columnId);
   }
 
 }

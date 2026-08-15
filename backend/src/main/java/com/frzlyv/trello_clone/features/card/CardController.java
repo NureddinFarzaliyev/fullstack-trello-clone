@@ -2,6 +2,7 @@ package com.frzlyv.trello_clone.features.card;
 
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,11 @@ public class CardController {
   CardDto createCard(@PathVariable UUID boardId, @PathVariable Long columnId,
       @Valid @RequestBody CreateCardRequestDto body) {
     return cardService.createCard(boardId, columnId, body);
+  }
+
+  @DeleteMapping("/{cardId}")
+  void deleteCard(@PathVariable UUID boardId, @PathVariable Long columnId, @PathVariable Long cardId) {
+    cardService.deleteCard(boardId, columnId, cardId);
   }
 
 }

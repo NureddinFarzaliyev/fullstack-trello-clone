@@ -1,6 +1,9 @@
 package com.frzlyv.trello_clone.features.column.domain;
 
+import java.util.List;
 import java.util.UUID;
+
+import com.frzlyv.trello_clone.features.card.domain.CardDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +23,6 @@ public class ColumnDto {
   String title;
   Long position;
   UUID boardId;
+  List<CardDto> cards;
 
 }

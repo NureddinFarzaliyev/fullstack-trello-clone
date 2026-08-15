@@ -15,4 +15,6 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
 
   Optional<CardEntity> findFirstByColumnIdOrderByPositionDesc(Long columnId);
 
+  void deleteByIdAndColumnId(Long id, Long columnId);
+
 }
