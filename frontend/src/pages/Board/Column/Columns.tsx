@@ -43,7 +43,7 @@ const Columns = ({ id }: { id: string }) => {
               updateColumn({
                 boardId: id ?? "",
                 columnId: source.id as number,
-                body: { position: source.index },
+                body: { position: source.index + 1 },
               });
             }
           }}
