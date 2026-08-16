@@ -25,7 +25,9 @@ public interface ColumnRepository extends JpaRepository<ColumnEntity, Long> {
 
   Optional<ColumnEntity> findByIdAndBoardId(Long id, UUID boardId);
 
-  void deleteByIdAndBoardId(Long id, UUID boardId);
+  Optional<ColumnEntity> deleteByIdAndBoardId(Long id, UUID boardId);
+
+  boolean existsByIdAndBoardId(Long id, UUID boardId);
 
   @Query("SELECT COALESCE(MAX(c.position),0) FROM ColumnEntity c WHERE c.board.id = :boardId")
   Long findMaxPositionByBoardId(@Param("boardId") UUID boardId);
@@ -40,6 +42,9 @@ public interface ColumnRepository extends JpaRepository<ColumnEntity, Long> {
       "WHERE c.board.id = :boardId AND c.position > :start AND c.position <= :end")
   void shiftPositionsLeft(@Param("boardId") UUID boardId, @Param("start") Long start, @Param("end") Long end);
 
-  boolean existsByIdAndBoardId(Long id, UUID boardId);
+  @Modifying
+  @Query("UPDATE ColumnEntity c SET c.position = c.position - 1 " +
+      "WHERE c.board.id = :boardId AND c.position > :start")
+  void shiftPositionsLeft(@Param("boardId") UUID boardId, @Param("start") Long start);
 
 }

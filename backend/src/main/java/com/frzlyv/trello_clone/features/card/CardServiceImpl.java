@@ -57,7 +57,10 @@ public class CardServiceImpl implements CardService {
   @PreAuthorize("@boardSecurity.hasColumnAccess(#boardId, #columnId)")
   @Transactional
   public void deleteCard(UUID boardId, Long columnId, Long cardId) {
-    cardRepository.deleteByIdAndColumnId(cardId, columnId);
+    CardEntity card = cardRepository.deleteByIdAndColumnId(cardId, columnId).orElse(null);
+    if (card != null) {
+      cardRepository.shiftPositionsLeft(columnId, card.getPosition());
+    }
   }
 
   @Override

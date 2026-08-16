@@ -1,6 +1,5 @@
 package com.frzlyv.trello_clone.features.column;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -64,7 +63,11 @@ public class ColumnServiceImpl implements ColumnService {
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
   @Transactional
   public void deleteColumn(UUID boardId, Long columnId) {
-    columnRepository.deleteByIdAndBoardId(columnId, boardId);
+    ColumnEntity column = columnRepository.deleteByIdAndBoardId(columnId, boardId)
+        .orElse(null);
+    if (column != null) {
+      columnRepository.shiftPositionsLeft(boardId, column.getPosition());
+    }
   }
 
   @Override

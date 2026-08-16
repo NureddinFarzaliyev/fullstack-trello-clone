@@ -20,7 +20,7 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
 
   Optional<CardEntity> findByIdAndColumnId(Long id, Long columnId);
 
-  void deleteByIdAndColumnId(Long id, Long columnId);
+  Optional<CardEntity> deleteByIdAndColumnId(Long id, Long columnId);
 
   // increment [newPos, prevPos)
   @Modifying
@@ -35,5 +35,11 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
       "WHERE c.column.id = :columnId AND c.position > :prevPos AND c.position <= :newPos")
   void shiftPositionsLeft(@Param("columnId") Long columnId, @Param("prevPos") Long prevPos,
       @Param("newPos") Long newPos);
+
+  // deletion decrement (prevPos:)
+  @Modifying
+  @Query("UPDATE CardEntity c SET c.position = c.position - 1 " +
+      "WHERE c.column.id = :columnId AND c.position > :prevPos")
+  void shiftPositionsLeft(@Param("columnId") Long columnId, @Param("prevPos") Long prevPos);
 
 }
