@@ -24,5 +24,8 @@ export type UpdateColumnRequestBody =
 export type CreateColumnRequestBody =
   components["schemas"]["CreateColumnRequestDto"];
 
+export type UpdateCardRequestBody =
+  components["schemas"]["UpdateCardRequestDto"];
+
 export type CreateCardRequestBody =
   components["schemas"]["CreateCardRequestDto"];

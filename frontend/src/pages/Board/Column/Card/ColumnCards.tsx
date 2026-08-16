@@ -14,7 +14,7 @@ const ColumnCards = ({
   return (
     <div className="flex flex-col gap-2">
       {cards.map((c) => (
-        <CardItem card={c} />
+        <CardItem card={c} boardId={boardId} />
       ))}
       <CreateCard columnId={columnId} boardId={boardId} />
     </div>
