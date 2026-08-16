@@ -79,18 +79,56 @@ public class CardServiceImpl implements CardService {
     if (body.getDue() != null) {
       card.setDue(body.getDue());
     }
-    if (body.getColumnId() != null) {
-      ColumnEntity column = columnRepository.findByIdAndBoardId(body.getColumnId(), boardId)
+
+    Long newPos = body.getPosition();
+    Long prevPos = card.getPosition();
+    Long newCol = body.getColumnId();
+    Long prevCol = card.getColumn().getId();
+
+    // Change column only, assign pos to maxPos
+    if (newCol != null && newPos == null && !prevCol.equals(newCol)) {
+      ColumnEntity column = columnRepository.findByIdAndBoardId(newCol, boardId)
           .orElseThrow(() -> new EntityNotFoundException("Column not found."));
+      card.setColumn(column);
+
+      // Assign card position to maxPos
+      Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(newCol)
+          .map(CardEntity::getPosition)
+          .orElse(0l);
+      card.setPosition(maxPos + 1);
+
+      // (prevPos:) shift to left on prevCol
+      cardRepository.shiftPositionsLeft(prevCol, prevPos);
+    }
+
+    // Change both column and position
+    if (newCol != null && newPos != null && !prevCol.equals(newCol)) {
+      // change column
+      ColumnEntity column = columnRepository.findByIdAndBoardId(newCol, boardId)
+          .orElseThrow(() -> new EntityNotFoundException("Column not found."));
+
+      // [0, maxPos]
+      Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(newCol)
+          .map(CardEntity::getPosition)
+          .orElse(0l);
+      newPos = Math.max(0l, Math.min(newPos, maxPos + 1));
+
+      // (prevPos:) shift to left on prevCol
+      cardRepository.shiftPositionsLeft(prevCol, prevPos);
+
+      // [newPos:) shift to right on newCol
+      cardRepository.shiftPositionsRight(newCol, newPos);
+
+      // assign position and column
+      card.setPosition(newPos);
       card.setColumn(column);
     }
 
-    Long newPos = body.getPosition();
-    if (newPos != null) {
-      Long prevPos = card.getPosition();
+    // Change position only
+    if (newPos != null && (newCol == null || newCol.equals(prevCol))) {
       Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(columnId)
           .map(CardEntity::getPosition)
-          .orElseThrow(() -> new EntityNotFoundException("Column not found."));
+          .orElse(0l);
 
       // [0, maxPos]
       newPos = Math.max(0L, Math.min(newPos, maxPos));

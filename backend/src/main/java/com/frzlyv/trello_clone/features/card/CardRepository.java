@@ -42,4 +42,10 @@ public interface CardRepository extends JpaRepository<CardEntity, Long> {
       "WHERE c.column.id = :columnId AND c.position > :prevPos")
   void shiftPositionsLeft(@Param("columnId") Long columnId, @Param("prevPos") Long prevPos);
 
+  // insertion increment [newPos:)
+  @Modifying
+  @Query("UPDATE CardEntity c SET c.position = c.position + 1 " +
+      "WHERE c.column.id = :columnId AND c.position >= :newPos")
+  void shiftPositionsRight(@Param("columnId") Long columnId, @Param("newPos") Long newPos);
+
 }
