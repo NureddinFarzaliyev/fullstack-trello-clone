@@ -86,21 +86,23 @@ public class CardServiceImpl implements CardService {
     }
 
     Long newPos = body.getPosition();
-    Long prevPos = card.getPosition();
-    Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(columnId)
-        .map(CardEntity::getPosition)
-        .orElseThrow(() -> new EntityNotFoundException("Column not found."));
+    if (newPos != null) {
+      Long prevPos = card.getPosition();
+      Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(columnId)
+          .map(CardEntity::getPosition)
+          .orElseThrow(() -> new EntityNotFoundException("Column not found."));
 
-    // [0, maxPos]
-    newPos = Math.max(0L, Math.min(newPos, maxPos));
+      // [0, maxPos]
+      newPos = Math.max(0L, Math.min(newPos, maxPos));
 
-    if (newPos != null && prevPos != newPos) {
-      if (newPos < prevPos) {
-        // shifted up (left), increment [newPos, prevPos)
-        cardRepository.shiftPositionsRight(columnId, prevPos, newPos);
-      } else {
-        // shifted down (right), decrement (prevPos, newPos]
-        cardRepository.shiftPositionsLeft(columnId, prevPos, newPos);
+      if (!newPos.equals(prevPos)) {
+        if (newPos < prevPos) {
+          // shifted up (left), increment [newPos, prevPos)
+          cardRepository.shiftPositionsRight(columnId, prevPos, newPos);
+        } else {
+          // shifted down (right), decrement (prevPos, newPos]
+          cardRepository.shiftPositionsLeft(columnId, prevPos, newPos);
+        }
       }
 
       card.setPosition(newPos);
