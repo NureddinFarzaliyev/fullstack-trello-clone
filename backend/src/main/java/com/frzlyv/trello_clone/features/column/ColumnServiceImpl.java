@@ -71,10 +71,10 @@ public class ColumnServiceImpl implements ColumnService {
   }
 
   @Override
-  @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
+  @PreAuthorize("@boardSecurity.hasColumnAccess(#boardId, #columnId)")
   @Transactional
-  public ColumnDto updateColumn(UUID boardId, Long ColumnId, UpdateColumnRequestDto body) {
-    ColumnEntity columnEntity = columnRepository.findById(ColumnId)
+  public ColumnDto updateColumn(UUID boardId, Long columnId, UpdateColumnRequestDto body) {
+    ColumnEntity columnEntity = columnRepository.findById(columnId)
         .orElseThrow(() -> new EntityNotFoundException());
 
     if (body.getTitle() != null) {
