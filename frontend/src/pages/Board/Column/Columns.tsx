@@ -55,6 +55,7 @@ const Columns = ({ id }: { id: string }) => {
                 column={c}
                 index={i}
                 dragDisabled={isPending}
+                boardId={id}
               />
             ))}
             <CreateColumn boardId={id} />

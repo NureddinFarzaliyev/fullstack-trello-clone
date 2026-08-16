@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/boards/{boardId}/columns/{columnId}/cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createCard"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/register": {
         parameters: {
             query?: never;
@@ -66,6 +82,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["updateColumn"];
+        trace?: never;
+    };
+    "/api/v1/boards/{boardId}/columns/{columnId}/cards/{cardId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteCard"];
+        options?: never;
+        head?: never;
+        patch: operations["updateCard"];
         trace?: never;
     };
     "/api/v1/boards/{boardId}": {
@@ -139,6 +171,18 @@ export interface components {
         CreateColumnRequestDto: {
             title: string;
         };
+        CardDto: {
+            /** Format: int64 */
+            id?: number;
+            title?: string;
+            description?: string;
+            /** Format: int64 */
+            position?: number;
+            /** Format: date-time */
+            due?: string;
+            /** Format: int64 */
+            columnId?: number;
+        };
         ColumnDto: {
             /** Format: int64 */
             id?: number;
@@ -147,6 +191,13 @@ export interface components {
             position?: number;
             /** Format: uuid */
             boardId?: string;
+            cards?: components["schemas"]["CardDto"][];
+        };
+        CreateCardRequestDto: {
+            title: string;
+            description?: string;
+            /** Format: date-time */
+            due?: string;
         };
         RegisterDto: {
             /** Format: email */
@@ -167,6 +218,16 @@ export interface components {
         };
         UpdateColumnRequestDto: {
             title?: string;
+            /** Format: int64 */
+            position?: number;
+        };
+        UpdateCardRequestDto: {
+            title?: string;
+            description?: string;
+            /** Format: int64 */
+            columnId?: number;
+            /** Format: date-time */
+            due?: string;
             /** Format: int64 */
             position?: number;
         };
@@ -276,6 +337,33 @@ export interface operations {
             };
         };
     };
+    createCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+                columnId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCardRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDto"];
+                };
+            };
+        };
+    };
     register: {
         parameters: {
             query?: never;
@@ -366,6 +454,56 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ColumnDto"];
+                };
+            };
+        };
+    };
+    deleteCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+                columnId: number;
+                cardId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+                columnId: number;
+                cardId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCardRequestDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDto"];
                 };
             };
         };

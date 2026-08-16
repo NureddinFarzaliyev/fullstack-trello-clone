@@ -31,7 +31,7 @@ const CreateColumn = ({ boardId }: { boardId: string }) => {
       }
       content={
         <div className="flex flex-col gap-2">
-          <label htmlFor="column-name">Column Name</label>
+          <label htmlFor="column-name">Create Column</label>
           <TextInput
             className="w-full! mt-3"
             type="text"

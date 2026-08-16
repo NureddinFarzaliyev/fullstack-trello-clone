@@ -4,15 +4,18 @@ import { CollisionPriority } from "@dnd-kit/abstract";
 import type { Column } from "../../../api/openapi-types";
 import DeleteColumn from "./DeleteColumn";
 import UpdateColumn from "./UpdateColumn";
+import ColumnCards from "./Card/ColumnCards";
 
 const ColumnCard = ({
   column,
   index,
   dragDisabled,
+  boardId,
 }: {
   column?: Column;
   index: number;
   dragDisabled?: boolean;
+  boardId: string;
 }) => {
   const { ref, handleRef } = useSortable({
     id: column?.id ?? 0,
@@ -46,6 +49,13 @@ const ColumnCard = ({
         <GripVertical
           ref={handleRef}
           className="-mr-2 opacity-50 cursor-grab shrink-0"
+        />
+      </div>
+      <div className="mt-5">
+        <ColumnCards
+          cards={column?.cards ?? []}
+          boardId={boardId}
+          columnId={column?.id ?? 0}
         />
       </div>
     </div>
