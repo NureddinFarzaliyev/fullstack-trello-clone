@@ -1,34 +1,23 @@
 import { GripVertical } from "lucide-react";
-import { useSortable } from "@dnd-kit/react/sortable";
-import { CollisionPriority } from "@dnd-kit/abstract";
 import type { Column } from "../../../api/openapi-types";
 import DeleteColumn from "./DeleteColumn";
 import UpdateColumn from "./UpdateColumn";
 import ColumnCards from "./Card/ColumnCards";
+import type { DraggableProvided } from "@hello-pangea/dnd";
 
 const ColumnCard = ({
   column,
-  index,
   dragDisabled,
   boardId,
+  provided,
 }: {
   column?: Column;
-  index: number;
   dragDisabled?: boolean;
   boardId: string;
+  provided?: DraggableProvided;
 }) => {
-  const { ref, handleRef } = useSortable({
-    id: column?.id ?? 0,
-    index,
-    type: "column",
-    accept: ["item", "column"],
-    collisionPriority: CollisionPriority.Low,
-    disabled: dragDisabled,
-  });
-
   return (
     <div
-      ref={ref}
       className="bg-(--surface-a20) w-60 py-3 px-5 shrink-0 h-fit"
       key={column?.id}
     >
@@ -46,10 +35,9 @@ const ColumnCard = ({
             />
           </div>
         </div>
-        <GripVertical
-          ref={handleRef}
-          className="-mr-2 opacity-50 cursor-grab shrink-0"
-        />
+        <div {...(provided?.dragHandleProps ?? {})}>
+          <GripVertical className="-mr-2 opacity-50 cursor-grab shrink-0" />
+        </div>
       </div>
       <div className="mt-5">
         <ColumnCards
