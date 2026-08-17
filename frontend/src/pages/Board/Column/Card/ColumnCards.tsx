@@ -30,10 +30,9 @@ const ColumnCards = ({
                 <div
                   ref={provided.innerRef}
                   {...provided.draggableProps}
-                  {...provided.dragHandleProps}
                   key={c.id}
                 >
-                  <CardItem card={c} boardId={boardId} />
+                  <CardItem card={c} boardId={boardId} provided={provided} />
                 </div>
               )}
             </Draggable>
