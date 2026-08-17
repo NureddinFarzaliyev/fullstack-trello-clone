@@ -4,6 +4,7 @@ import DeleteColumn from "./DeleteColumn";
 import UpdateColumn from "./UpdateColumn";
 import ColumnCards from "./Card/ColumnCards";
 import type { DraggableProvided } from "@hello-pangea/dnd";
+import classNames from "classnames";
 
 const ColumnCard = ({
   column,
@@ -18,7 +19,9 @@ const ColumnCard = ({
 }) => {
   return (
     <div
-      className="bg-(--surface-a20) w-60 py-3 px-5 shrink-0 h-fit"
+      className={classNames(
+        "bg-(--surface-a20) w-60 py-3 px-5 shrink-0 h-fit mx-2",
+      )}
       key={column?.id}
     >
       <div className="group flex gap-2 justify-between shrink-0">

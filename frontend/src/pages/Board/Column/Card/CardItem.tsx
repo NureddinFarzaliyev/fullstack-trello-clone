@@ -14,7 +14,7 @@ const CardItem = ({
   provided?: DraggableProvided;
 }) => {
   return (
-    <div className="bg-(--surface-a10) py-2 px-3 flex flex-col gap-2">
+    <div className="bg-(--surface-a10) py-2 px-3 flex flex-col gap-2 my-1">
       <div className="flex gap-1 group justify-between items-center">
         <div className="flex gap-2 items-center">
           <h4>{card.title}</h4>

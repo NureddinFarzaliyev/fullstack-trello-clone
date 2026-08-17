@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { handleQueryError } from "../../shared/utils/errors/errorHandler";
 import type {
+  Column,
   CreateCardRequestBody,
   UpdateCardRequestBody,
 } from "../openapi-types";

@@ -18,7 +18,7 @@ const ColumnCards = ({
         <div
           {...provided.droppableProps}
           ref={provided.innerRef}
-          className="flex flex-col gap-2"
+          className="flex flex-col"
         >
           {cards.map((c, i) => (
             <Draggable

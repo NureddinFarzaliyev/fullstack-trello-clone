@@ -8,6 +8,7 @@ import { DEFAULT_PAGE_SIZE } from "../../shared/utils/pagination";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
 import type {
+  Column,
   CreateColumnRequestBody,
   UpdateColumnRequestBody,
 } from "../openapi-types";

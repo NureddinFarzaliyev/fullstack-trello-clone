@@ -1,6 +1,6 @@
 import { useBoardColumns } from "../../../api/queries/useColumnsQuery";
 import HorizontalFullSpinner from "../../../shared/ui/loading/HorizontalFullSpinner";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import InfiniteScrollTrigger from "../../../shared/ui/infiniteScroll/InfiniteScrollTrigger";
 import { useIntersectionObserver } from "../../../shared/hooks/useIntersectionObserver";
 import FadeIn from "../../../shared/ui/animation/FadeIn";
@@ -31,7 +31,19 @@ const Columns = ({ id }: { id: string }) => {
     useUpdateColumn();
   const { mutateAsync: updateCard, isPending: isCardPending } = useUpdateCard();
 
-  const columns = columnsPages?.pages.flatMap((page) => page.content) ?? [];
+  // const columns = columnsPages?.pages.flatMap((page) => page.content) ?? [];
+  const serverColumns = useMemo(
+    () => columnsPages?.pages.flatMap((page) => page.content) ?? [],
+    [columnsPages],
+  );
+
+  const [prevServerColumns, setPrevServerColumns] = useState(serverColumns);
+  const [columns, setColumns] = useState(serverColumns);
+
+  if (serverColumns !== prevServerColumns) {
+    setPrevServerColumns(serverColumns);
+    setColumns(serverColumns);
+  }
 
   return isColumnsPending ? (
     <HorizontalFullSpinner />
@@ -57,6 +69,18 @@ const Columns = ({ id }: { id: string }) => {
                   columnId: draggedItemId,
                   body: { position: droppedIndex },
                 });
+                setColumns((prevColumns) => {
+                  const updatedColumns = [...prevColumns];
+                  const draggedColumnIndex = updatedColumns.findIndex(
+                    (c) => c?.id === draggedItemId,
+                  );
+                  const [draggedColumn] = updatedColumns.splice(
+                    draggedColumnIndex,
+                    1,
+                  );
+                  updatedColumns.splice(droppedIndex - 1, 0, draggedColumn);
+                  return updatedColumns;
+                });
               } else if (type === "card") {
                 updateCard({
                   boardId: id ?? "",
@@ -67,6 +91,47 @@ const Columns = ({ id }: { id: string }) => {
                     columnId: droppedColumnId,
                   },
                 });
+                setColumns((prevColumns) => {
+                  const updatedColumns = [...prevColumns];
+                  const sourceColumnIndex = updatedColumns.findIndex(
+                    (c) => c?.id === sourceColumnId,
+                  );
+                  const destinationColumnIndex = updatedColumns.findIndex(
+                    (c) => c?.id === droppedColumnId,
+                  );
+
+                  if (
+                    sourceColumnIndex !== -1 &&
+                    destinationColumnIndex !== -1
+                  ) {
+                    const sourceColumn =
+                      updatedColumns[sourceColumnIndex] ?? {};
+                    const destinationColumn =
+                      updatedColumns[destinationColumnIndex] ?? {};
+
+                    const draggedCardIndex = sourceColumn.cards?.findIndex(
+                      (card) => card?.id === draggedItemId,
+                    );
+
+                    if (
+                      draggedCardIndex !== undefined &&
+                      draggedCardIndex !== -1
+                    ) {
+                      const [draggedCard] =
+                        sourceColumn.cards?.splice(draggedCardIndex, 1) ?? [];
+
+                      if (draggedCard) {
+                        destinationColumn.cards?.splice(
+                          droppedIndex - 1,
+                          0,
+                          draggedCard,
+                        );
+                      }
+                    }
+                  }
+
+                  return updatedColumns;
+                });
               }
             }
           }}
@@ -76,7 +141,7 @@ const Columns = ({ id }: { id: string }) => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="flex gap-4 overflow-x-auto items-start min-w-full"
+                className="flex overflow-x-auto items-start min-w-full"
               >
                 {columns.map((c, i) => (
                   <Draggable
@@ -97,6 +162,8 @@ const Columns = ({ id }: { id: string }) => {
                     )}
                   </Draggable>
                 ))}
+
+                {provided.placeholder}
                 <CreateColumn boardId={id} />
                 <InfiniteScrollTrigger
                   className="w-14! h-14! mt-0!"
@@ -105,7 +172,6 @@ const Columns = ({ id }: { id: string }) => {
                   hasData={!!columns?.length}
                   ref={loadMoreRef}
                 />
-                {provided.placeholder}
               </div>
             )}
           </Droppable>
