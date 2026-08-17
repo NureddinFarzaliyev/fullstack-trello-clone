@@ -7,10 +7,12 @@ const ColumnCards = ({
   cards,
   boardId,
   columnId,
+  isDragDisabled,
 }: {
   cards: Card[];
   boardId: string;
   columnId: number;
+  isDragDisabled?: boolean;
 }) => {
   return (
     <Droppable droppableId={`column-${columnId}`} type="card">
@@ -25,6 +27,7 @@ const ColumnCards = ({
               key={c?.id}
               draggableId={`card-${c?.id ?? ""}`}
               index={i}
+              isDragDisabled={isDragDisabled}
             >
               {(provided) => (
                 <div

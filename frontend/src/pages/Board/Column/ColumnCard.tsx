@@ -44,6 +44,7 @@ const ColumnCard = ({
       </div>
       <div className="mt-5">
         <ColumnCards
+          isDragDisabled={dragDisabled}
           cards={column?.cards ?? []}
           boardId={boardId}
           columnId={column?.id ?? 0}

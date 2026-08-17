@@ -148,6 +148,7 @@ const Columns = ({ id }: { id: string }) => {
                     key={c?.id}
                     draggableId={`column-${c?.id ?? ""}`}
                     index={i}
+                    isDragDisabled={isColumnPending || isCardPending}
                   >
                     {(provided) => (
                       <div ref={provided.innerRef} {...provided.draggableProps}>
