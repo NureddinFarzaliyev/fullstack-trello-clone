@@ -77,7 +77,7 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public List<BoardWithRoleDto> getAllBoards(UserEntity user) {
-    List<BoardMemberEntity> boardMemberEntities = boardMemberRepository.findAllByUserId(user.getId());
+    List<BoardMemberEntity> boardMemberEntities = boardMemberRepository.findAllByUserIdWithBoard(user.getId());
     List<BoardWithRoleDto> boardWithRoleDtos = boardMemberEntities.stream().map(e -> BoardWithRoleDto.builder()
         .title(e.getBoard().getTitle())
         .id(e.getBoard().getId())
