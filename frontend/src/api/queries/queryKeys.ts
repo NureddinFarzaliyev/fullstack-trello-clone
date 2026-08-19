@@ -10,4 +10,8 @@ export const boardQueryKeys = {
     ...boardQueryKeys.boardById(boardId),
     "columns",
   ],
+  members: (boardId: string) => [
+    ...boardQueryKeys.boardById(boardId),
+    "members",
+  ],
 };

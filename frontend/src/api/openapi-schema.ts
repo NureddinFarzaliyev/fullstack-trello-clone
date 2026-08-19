@@ -4,6 +4,38 @@
  */
 
 export interface paths {
+    "/api/v1/boards/{boardId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getBoardMembers"];
+        put?: never;
+        post: operations["createBoardMember"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/boards/{boardId}/members/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["acceptBoardInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/boards/{boardId}/columns": {
         parameters: {
             query?: never;
@@ -100,6 +132,22 @@ export interface paths {
         patch: operations["updateCard"];
         trace?: never;
     };
+    "/api/v1/boards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getAllBoards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/boards/{boardId}": {
         parameters: {
             query?: never;
@@ -164,10 +212,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/boards/{boardId}/members/{boardMemberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["deleteBoardMember"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        CreateBoardMemberDto: {
+            /** Format: email */
+            email?: string;
+        };
+        BoardMemberDto: {
+            /** Format: int64 */
+            id?: number;
+            user?: components["schemas"]["UserDto"];
+            /** Format: uuid */
+            boardId?: string;
+            /** @enum {string} */
+            role?: "OWNER" | "EDITOR" | "PENDING";
+        };
+        UserDto: {
+            /** Format: int64 */
+            id?: number;
+            username?: string;
+            email?: string;
+        };
         CreateColumnRequestDto: {
             title: string;
         };
@@ -205,12 +288,6 @@ export interface components {
             password: string;
             username: string;
         };
-        UserDto: {
-            /** Format: int64 */
-            id?: number;
-            username?: string;
-            email?: string;
-        };
         LoginDto: {
             /** Format: email */
             email: string;
@@ -230,6 +307,14 @@ export interface components {
             due?: string;
             /** Format: int64 */
             position?: number;
+        };
+        BoardWithRoleDto: {
+            /** Format: uuid */
+            id?: string;
+            isPublic?: boolean;
+            title?: string;
+            /** @enum {string} */
+            role?: "OWNER" | "EDITOR" | "PENDING";
         };
         BoardDto: {
             /** Format: uuid */
@@ -287,6 +372,76 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getBoardMembers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BoardMemberDto"][];
+                };
+            };
+        };
+    };
+    createBoardMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBoardMemberDto"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BoardMemberDto"];
+                };
+            };
+        };
+    };
+    acceptBoardInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BoardMemberDto"];
+                };
+            };
+        };
+    };
     getColumns: {
         parameters: {
             query: {
@@ -508,6 +663,26 @@ export interface operations {
             };
         };
     };
+    getAllBoards: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BoardWithRoleDto"][];
+                };
+            };
+        };
+    };
     getBoardById: {
         parameters: {
             query?: never;
@@ -575,6 +750,27 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    deleteBoardMember: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+                boardMemberId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;

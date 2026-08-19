@@ -5,6 +5,7 @@ import Section from "../../shared/ui/section/Section";
 import { ChevronLeft } from "lucide-react";
 import FadeIn from "../../shared/ui/animation/FadeIn";
 import Columns from "./Column/Columns";
+import BoardMembers from "./BoardMembers";
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,11 +16,14 @@ const Board = () => {
   ) : (
     <FadeIn>
       <Section>
-        <div className="flex items-center gap-2">
-          <Link to="/me" className="opacity-60 hover:opacity-100 transition">
-            <ChevronLeft size={32} />
-          </Link>
-          <h3 className="text-xl">{data?.title}</h3>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Link to="/me" className="opacity-60 hover:opacity-100 transition">
+              <ChevronLeft size={32} />
+            </Link>
+            <h3 className="text-xl">{data?.title}</h3>
+          </div>
+          <BoardMembers boardId={id ?? ""} />
         </div>
         <Columns id={id ?? ""} />
       </Section>

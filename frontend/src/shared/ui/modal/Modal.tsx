@@ -7,7 +7,7 @@ const Modal = ({
 }: {
   button?: React.ReactNode;
   content?: ReactNode;
-  submitBtn: ReactNode;
+  submitBtn?: ReactNode;
 }) => {
   const modal = useRef<HTMLDialogElement>(null);
 
@@ -23,7 +23,7 @@ const Modal = ({
           <div>{content}</div>
           <div className="modal-action">
             <form method="dialog">
-              {submitBtn}
+              {submitBtn ? submitBtn : null}
               <button className="btn">Close</button>
             </form>
           </div>

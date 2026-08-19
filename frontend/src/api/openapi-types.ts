@@ -6,6 +6,10 @@ export type Me = components["schemas"]["UserDto"];
 
 export type Board = components["schemas"]["BoardDto"];
 
+export type BoardWithRole = components["schemas"]["BoardWithRoleDto"];
+
+export type BoardRole = components["schemas"]["BoardWithRoleDto"]["role"];
+
 export type Column = components["schemas"]["ColumnDto"];
 
 export type Card = components["schemas"]["CardDto"];

@@ -17,6 +17,20 @@ export const useDefaultBoard = () => {
   });
 };
 
+const getBoards = async () => {
+  const { data, error } = await openApiClient.GET("/api/v1/boards");
+
+  if (error) handleQueryError(error);
+  return data;
+};
+
+export const useBoards = () => {
+  return useQuery({
+    queryKey: boardQueryKeys.all,
+    queryFn: getBoards,
+  });
+};
+
 const getBoardById = async (boardId: string) => {
   const { data, error } = await openApiClient.GET("/api/v1/boards/{boardId}", {
     params: {

@@ -1,11 +1,11 @@
-import { useDefaultBoard } from "../../api/queries/useBoardsQuery";
+import { useBoards } from "../../api/queries/useBoardsQuery";
 import FadeIn from "../../shared/ui/animation/FadeIn";
 import HorizontalFullSpinner from "../../shared/ui/loading/HorizontalFullSpinner";
 import SectionHeader from "../../shared/ui/section/SectionHeader";
 import BoardCard from "./BoardCard";
 
 const MyBoards = () => {
-  const { data, isPending } = useDefaultBoard();
+  const { data, isPending } = useBoards();
 
   return (
     <div>
@@ -14,7 +14,9 @@ const MyBoards = () => {
         <HorizontalFullSpinner />
       ) : (
         <FadeIn>
-          <BoardCard board={data} />
+          <div className="flex flex-col gap-2">
+            {data?.map((board) => <BoardCard board={board} />)}
+          </div>
         </FadeIn>
       )}
     </div>
