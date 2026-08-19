@@ -23,7 +23,7 @@ const Board = () => {
             </Link>
             <h3 className="text-xl">{data?.title}</h3>
           </div>
-          <BoardMembers boardId={id ?? ""} />
+          <BoardMembers boardId={id ?? ""} isOwner={data?.role === "OWNER"} />
         </div>
         <Columns id={id ?? ""} />
       </Section>

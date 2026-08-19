@@ -88,3 +88,38 @@ export const useAcceptBoardInvite = () => {
     },
   });
 };
+
+const revokeMember = async (boardId: string, boardMemberId: number) => {
+  const { data } = await openApiClient.DELETE(
+    "/api/v1/boards/{boardId}/members/{boardMemberId}",
+    {
+      params: {
+        path: {
+          boardId,
+          boardMemberId,
+        },
+      },
+    },
+  );
+
+  return data;
+};
+
+export const useRevokeMember = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      boardId,
+      boardMemberId,
+    }: {
+      boardId: string;
+      boardMemberId: number;
+    }) => revokeMember(boardId, boardMemberId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.members(variables.boardId),
+      });
+    },
+  });
+};

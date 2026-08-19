@@ -1,39 +1,21 @@
 import { UsersIcon } from "lucide-react";
 import Modal from "../../shared/ui/modal/Modal";
-import {
-  useBoardMembers,
-  useInviteMember,
-} from "../../api/queries/useMembersQuery";
+import { useBoardMembers } from "../../api/queries/useMembersQuery";
 import Avatar from "../../shared/ui/avatar/Avatar";
 import Spinner from "../../shared/ui/loading/Spinner";
 import FadeIn from "../../shared/ui/animation/FadeIn";
-import TextInput from "../../shared/ui/form/TextInput";
-import Button from "../../shared/ui/form/Button";
-import { useState } from "react";
-import { useToast } from "../../stores/toast.store";
 
-const BoardMembers = ({ boardId }: { boardId: string }) => {
+import InviteMember from "./InviteMember";
+import RevokeMember from "./RevokeMember";
+
+const BoardMembers = ({
+  boardId,
+  isOwner,
+}: {
+  boardId: string;
+  isOwner: boolean;
+}) => {
   const { data, isPending } = useBoardMembers(boardId);
-  const { mutate: inviteMember, isPending: isInviting } = useInviteMember();
-  const { addToast } = useToast();
-  const [email, setEmail] = useState("");
-
-  const onInvite = () => {
-    if (email) {
-      inviteMember(
-        { boardId, email },
-        {
-          onSuccess: () => {
-            addToast({
-              content: "Invitation sent successfully!",
-              type: "success",
-            });
-          },
-        },
-      );
-      setEmail("");
-    }
-  };
 
   return (
     <div>
@@ -62,28 +44,12 @@ const BoardMembers = ({ boardId }: { boardId: string }) => {
                       {d.role} | {d.user?.email}
                     </p>
                   </div>
+                  {isOwner && d.role !== "OWNER" && (
+                    <RevokeMember boardId={boardId} memberId={d.id ?? 0} />
+                  )}
                 </div>
               ))}
-              <div>
-                <h4 className="mt-5 mb-3 text-md font-medium">
-                  Invite Members
-                </h4>
-                <div className="flex gap-1 items-center">
-                  <TextInput
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    className="w-full"
-                    name="email"
-                    type="email"
-                    placeholder="Type user's email"
-                  />
-                  <Button
-                    onClick={onInvite}
-                    content={isInviting ? "Inviting..." : "Invite"}
-                    disabled={isInviting}
-                  />
-                </div>
-              </div>
+              {isOwner && <InviteMember boardId={boardId} />}
             </FadeIn>
           )
         }

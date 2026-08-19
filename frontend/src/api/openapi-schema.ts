@@ -316,12 +316,6 @@ export interface components {
             /** @enum {string} */
             role?: "OWNER" | "EDITOR" | "PENDING";
         };
-        BoardDto: {
-            /** Format: uuid */
-            id?: string;
-            isPublic?: boolean;
-            title?: string;
-        };
         Pageable: {
             /** Format: int32 */
             page?: number;
@@ -362,6 +356,12 @@ export interface components {
             empty?: boolean;
             sorted?: boolean;
             unsorted?: boolean;
+        };
+        BoardDto: {
+            /** Format: uuid */
+            id?: string;
+            isPublic?: boolean;
+            title?: string;
         };
     };
     responses: never;
@@ -700,7 +700,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["BoardDto"];
+                    "*/*": components["schemas"]["BoardWithRoleDto"];
                 };
             };
         };
