@@ -72,4 +72,14 @@ public class BoardMemberServiceImpl implements BoardMemberService {
     boardMemberRepository.deleteByIdAndBoardId(boardMemberId, boardId);
   }
 
+  @Override
+  public BoardMemberDto acceptBoardMemberInvite(UUID boardId, UserEntity user) {
+    BoardMemberEntity boardMemberEntity = boardMemberRepository.findByBoardIdAndUserIdAndRole(boardId, user.getId(),
+        BoardRole.PENDING).orElseThrow(() -> new EntityNotFoundException("Invitation not found"));
+
+    boardMemberEntity.setRole(BoardRole.EDITOR);
+    BoardMemberEntity saved = boardMemberRepository.save(boardMemberEntity);
+    return modelMapper.toDto(saved);
+  }
+
 }
