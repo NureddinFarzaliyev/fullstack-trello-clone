@@ -31,6 +31,10 @@ public interface BoardMemberRepository extends JpaRepository<BoardMemberEntity, 
   @Query("SELECT bm FROM BoardMemberEntity bm JOIN FETCH bm.board WHERE bm.user.id = :userId")
   List<BoardMemberEntity> findAllByUserIdWithBoard(@Param("userId") Long userId);
 
+  @Query("SELECT bm FROM BoardMemberEntity bm JOIN FETCH bm.board WHERE bm.user.id = :userId AND bm.board.id = :boardId")
+  Optional<BoardMemberEntity> findByUserIdAndBoardIdWithBoard(@Param("userId") Long userId,
+      @Param("boardId") UUID boardId);
+
   Boolean existsByBoardIdAndUserId(UUID boardId, Long userId);
 
   Boolean existsByBoardIdAndUserIdAndRole(UUID boardId, Long userId, BoardRole role);

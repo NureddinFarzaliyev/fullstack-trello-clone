@@ -68,11 +68,20 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
-  public BoardDto getBoardById(UUID boardId) {
+  public BoardWithRoleDto getBoardById(UUID boardId, UserEntity user) {
     BoardEntity boardEntity = boardRepository.findById(boardId)
-        .orElseThrow(() -> new EntityNotFoundException());
+        .orElseThrow(() -> new EntityNotFoundException("Board not found."));
 
-    return modelMapper.toDto(boardEntity);
+    BoardMemberEntity boardMemberEntity = boardMemberRepository
+        .findByUserIdAndBoardIdWithBoard(user.getId(), boardId)
+        .orElseThrow(() -> new EntityNotFoundException("Board member not found."));
+
+    return BoardWithRoleDto.builder()
+        .id(boardEntity.getId())
+        .title(boardEntity.getTitle())
+        .isPublic(boardEntity.getIsPublic())
+        .role(boardMemberEntity.getRole())
+        .build();
   }
 
   @Override

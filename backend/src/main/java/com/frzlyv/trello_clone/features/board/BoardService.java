@@ -17,7 +17,7 @@ public interface BoardService {
 
   BoardDto getDefaultBoard(UserEntity user);
 
-  BoardDto getBoardById(UUID boardId);
+  BoardWithRoleDto getBoardById(UUID boardId, UserEntity user);
 
   List<BoardWithRoleDto> getAllBoards(UserEntity user);
 

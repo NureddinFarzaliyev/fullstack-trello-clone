@@ -36,8 +36,8 @@ public class BoardController {
   }
 
   @GetMapping("/{boardId}")
-  BoardDto getBoardById(@PathVariable UUID boardId) {
-    return boardService.getBoardById(boardId);
+  BoardWithRoleDto getBoardById(@PathVariable UUID boardId, @AuthenticationPrincipal UserEntity userEntity) {
+    return boardService.getBoardById(boardId, userEntity);
   }
 
 }
