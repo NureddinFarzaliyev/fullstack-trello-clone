@@ -59,3 +59,32 @@ export const useInviteMember = () => {
     },
   });
 };
+
+const acceptBoardInvite = async (boardId: string) => {
+  const { data, error } = await openApiClient.POST(
+    "/api/v1/boards/{boardId}/members/accept",
+    {
+      params: {
+        path: {
+          boardId,
+        },
+      },
+    },
+  );
+
+  if (error || !data) handleQueryError(error);
+  return data;
+};
+
+export const useAcceptBoardInvite = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (boardId: string) => acceptBoardInvite(boardId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.all,
+      });
+    },
+  });
+};
