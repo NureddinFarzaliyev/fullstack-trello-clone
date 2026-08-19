@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.frzlyv.trello_clone.features.board.domain.BoardDto;
+import com.frzlyv.trello_clone.features.board.domain.BoardWithRoleDto;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 import com.frzlyv.trello_clone.shared.events.UserRegisterEvent;
 
@@ -18,6 +19,6 @@ public interface BoardService {
 
   BoardDto getBoardById(UUID boardId);
 
-  List<BoardDto> getAllBoards(UserEntity user);
+  List<BoardWithRoleDto> getAllBoards(UserEntity user);
 
 }

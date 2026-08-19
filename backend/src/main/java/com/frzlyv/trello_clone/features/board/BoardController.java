@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.frzlyv.trello_clone.features.board.domain.BoardDto;
+import com.frzlyv.trello_clone.features.board.domain.BoardWithRoleDto;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class BoardController {
   private final BoardService boardService;
 
   @GetMapping
-  List<BoardDto> getAllBoards(@AuthenticationPrincipal UserEntity userEntity) {
+  List<BoardWithRoleDto> getAllBoards(@AuthenticationPrincipal UserEntity userEntity) {
     return boardService.getAllBoards(userEntity);
   }
 

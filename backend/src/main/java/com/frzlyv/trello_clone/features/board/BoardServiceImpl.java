@@ -12,6 +12,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.frzlyv.trello_clone.features.board.domain.BoardDto;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
+import com.frzlyv.trello_clone.features.board.domain.BoardWithRoleDto;
 import com.frzlyv.trello_clone.features.boardMember.BoardMemberRepository;
 import com.frzlyv.trello_clone.features.boardMember.BoardMemberService;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardMemberEntity;
@@ -75,10 +76,15 @@ public class BoardServiceImpl implements BoardService {
   }
 
   @Override
-  public List<BoardDto> getAllBoards(UserEntity user) {
+  public List<BoardWithRoleDto> getAllBoards(UserEntity user) {
     List<BoardMemberEntity> boardMemberEntities = boardMemberRepository.findAllByUserId(user.getId());
-    List<BoardEntity> boardEntities = boardMemberEntities.stream().map(e -> e.getBoard()).toList();
-    return boardEntities.stream().map(modelMapper::toDto).toList();
+    List<BoardWithRoleDto> boardWithRoleDtos = boardMemberEntities.stream().map(e -> BoardWithRoleDto.builder()
+        .title(e.getBoard().getTitle())
+        .id(e.getBoard().getId())
+        .isPublic(e.getBoard().getIsPublic())
+        .role(e.getRole())
+        .build()).toList();
+    return boardWithRoleDtos;
   }
 
 }
