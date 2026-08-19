@@ -1,5 +1,6 @@
 package com.frzlyv.trello_clone.features.board;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import com.frzlyv.trello_clone.features.board.domain.BoardDto;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
 import com.frzlyv.trello_clone.features.boardMember.BoardMemberRepository;
+import com.frzlyv.trello_clone.features.boardMember.BoardMemberService;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardMemberEntity;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardRole;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
@@ -70,6 +72,13 @@ public class BoardServiceImpl implements BoardService {
         .orElseThrow(() -> new EntityNotFoundException());
 
     return modelMapper.toDto(boardEntity);
+  }
+
+  @Override
+  public List<BoardDto> getAllBoards(UserEntity user) {
+    List<BoardMemberEntity> boardMemberEntities = boardMemberRepository.findAllByUserId(user.getId());
+    List<BoardEntity> boardEntities = boardMemberEntities.stream().map(e -> e.getBoard()).toList();
+    return boardEntities.stream().map(modelMapper::toDto).toList();
   }
 
 }

@@ -1,5 +1,6 @@
 package com.frzlyv.trello_clone.features.board;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,11 @@ import lombok.RequiredArgsConstructor;
 public class BoardController {
 
   private final BoardService boardService;
+
+  @GetMapping
+  List<BoardDto> getAllBoards(@AuthenticationPrincipal UserEntity userEntity) {
+    return boardService.getAllBoards(userEntity);
+  }
 
   @GetMapping("/default")
   BoardDto getDefaultBoard(@AuthenticationPrincipal UserEntity userEntity) {

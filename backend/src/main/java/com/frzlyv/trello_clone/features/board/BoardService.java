@@ -1,5 +1,6 @@
 package com.frzlyv.trello_clone.features.board;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.frzlyv.trello_clone.features.board.domain.BoardDto;
@@ -16,5 +17,7 @@ public interface BoardService {
   BoardDto getDefaultBoard(UserEntity user);
 
   BoardDto getBoardById(UUID boardId);
+
+  List<BoardDto> getAllBoards(UserEntity user);
 
 }
