@@ -6,10 +6,42 @@ import { ChevronLeft } from "lucide-react";
 import FadeIn from "../../shared/ui/animation/FadeIn";
 import Columns from "./Column/Columns";
 import BoardMembers from "./BoardMembers";
+import { useEffect } from "react";
+import { Client } from "@stomp/stompjs";
+import SockJs from "sockjs-client";
+import { useQueryClient } from "@tanstack/react-query";
+import { boardQueryKeys } from "../../api/queries/queryKeys";
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isPending } = useBoard(id ?? "");
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const client = new Client({
+      webSocketFactory: () =>
+        new SockJs(
+          `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"}/ws`,
+        ),
+      onConnect: () => {
+        client.subscribe(`/topic/board/${id}`, (message) => {
+          const event = JSON.parse(message.body);
+          if (event.type === "BOARD_UPDATED") {
+            queryClient.invalidateQueries({
+              queryKey: boardQueryKeys.boardById(id ?? ""),
+            });
+          }
+          console.log("Received event:", event);
+        });
+      },
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, [id, queryClient]);
 
   return isPending ? (
     <FullPageSpinner />

@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 import com.frzlyv.trello_clone.features.column.domain.CreateColumnRequestDto;
 import com.frzlyv.trello_clone.features.column.domain.UpdateColumnRequestDto;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
+import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadDto;
+import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadType;
 import com.frzlyv.trello_clone.shared.Mapper;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +33,7 @@ public class ColumnServiceImpl implements ColumnService {
   private final ColumnRepository columnRepository;
   private final BoardRepository boardRepository;
   private final Mapper<ColumnEntity, ColumnDto> modelMapper;
+  private final SimpMessagingTemplate simpMessagingTemplate;
 
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
@@ -102,7 +106,13 @@ public class ColumnServiceImpl implements ColumnService {
 
     }
 
-    return modelMapper.toDto(columnEntity);
+    ColumnDto savedColumnDto = modelMapper.toDto(columnEntity);
+
+    BoardEventPayloadDto<ColumnDto> payload = new BoardEventPayloadDto<ColumnDto>(savedColumnDto,
+        BoardEventPayloadType.BOARD_UPDATED);
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId, payload);
+
+    return savedColumnDto;
   }
 
 }
