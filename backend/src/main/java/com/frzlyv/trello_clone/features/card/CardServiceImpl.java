@@ -2,6 +2,7 @@ package com.frzlyv.trello_clone.features.card;
 
 import java.util.UUID;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,8 @@ import com.frzlyv.trello_clone.features.card.domain.CreateCardRequestDto;
 import com.frzlyv.trello_clone.features.card.domain.UpdateCardRequestDto;
 import com.frzlyv.trello_clone.features.column.ColumnRepository;
 import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
+import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadDto;
+import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadType;
 import com.frzlyv.trello_clone.shared.Mapper;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +30,7 @@ public class CardServiceImpl implements CardService {
   private final ColumnRepository columnRepository;
   private final CardRepository cardRepository;
   private final Mapper<CardEntity, CardDto> modelMapper;
+  private final SimpMessagingTemplate simpMessagingTemplate;
 
   @Override
   @PreAuthorize("@boardSecurity.hasColumnAccess(#boardId, #columnId)")
@@ -48,8 +52,12 @@ public class CardServiceImpl implements CardService {
         .build();
 
     CardEntity savedCard = cardRepository.save(card);
+    CardDto savedCardDto = modelMapper.toDto(savedCard);
 
-    return modelMapper.toDto(savedCard);
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<CardDto>(savedCardDto, BoardEventPayloadType.CARD_CREATE));
+
+    return savedCardDto;
 
   }
 
@@ -60,6 +68,8 @@ public class CardServiceImpl implements CardService {
     CardEntity card = cardRepository.deleteByIdAndColumnId(cardId, columnId).orElse(null);
     if (card != null) {
       cardRepository.shiftPositionsLeft(columnId, card.getPosition());
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.CARD_DELETE));
     }
   }
 
@@ -146,7 +156,13 @@ public class CardServiceImpl implements CardService {
       card.setPosition(newPos);
     }
 
-    return modelMapper.toDto(card);
+    CardEntity savedCard = cardRepository.save(card);
+    CardDto savedCardDto = modelMapper.toDto(savedCard);
+
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<CardDto>(savedCardDto, BoardEventPayloadType.CARD_PATCH));
+
+    return savedCardDto;
   }
 
 }

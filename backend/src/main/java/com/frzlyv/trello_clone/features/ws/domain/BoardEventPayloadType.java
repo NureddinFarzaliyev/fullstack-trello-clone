@@ -2,5 +2,10 @@
 package com.frzlyv.trello_clone.features.ws.domain;
 
 public enum BoardEventPayloadType {
-  BOARD_UPDATED
+  COLUMN_PATCH,
+  COLUMN_DELETE,
+  COLUMN_CREATE,
+  CARD_PATCH,
+  CARD_DELETE,
+  CARD_CREATE,
 }

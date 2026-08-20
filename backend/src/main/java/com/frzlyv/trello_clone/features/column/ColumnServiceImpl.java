@@ -53,7 +53,12 @@ public class ColumnServiceImpl implements ColumnService {
 
     ColumnEntity savedColumnEntity = columnRepository.save(columnEntity);
 
-    return modelMapper.toDto(savedColumnEntity);
+    ColumnDto savedColumnDto = modelMapper.toDto(savedColumnEntity);
+
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<ColumnDto>(savedColumnDto, BoardEventPayloadType.COLUMN_CREATE));
+
+    return savedColumnDto;
   }
 
   @Override
@@ -71,6 +76,8 @@ public class ColumnServiceImpl implements ColumnService {
         .orElse(null);
     if (column != null) {
       columnRepository.shiftPositionsLeft(boardId, column.getPosition());
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.COLUMN_DELETE));
     }
   }
 
@@ -108,9 +115,8 @@ public class ColumnServiceImpl implements ColumnService {
 
     ColumnDto savedColumnDto = modelMapper.toDto(columnEntity);
 
-    BoardEventPayloadDto<ColumnDto> payload = new BoardEventPayloadDto<ColumnDto>(savedColumnDto,
-        BoardEventPayloadType.BOARD_UPDATED);
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId, payload);
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<ColumnDto>(savedColumnDto, BoardEventPayloadType.COLUMN_PATCH));
 
     return savedColumnDto;
   }
