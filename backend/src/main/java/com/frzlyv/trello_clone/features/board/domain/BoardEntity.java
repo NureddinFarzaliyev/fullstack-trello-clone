@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardMemberEntity;
+import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,13 +17,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * BoardEntity
  */
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -46,6 +49,6 @@ public class BoardEntity {
 
   @Builder.Default
   @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-  List<BoardMemberEntity> columns = new ArrayList<>();
+  List<ColumnEntity> columns = new ArrayList<>();
 
 }

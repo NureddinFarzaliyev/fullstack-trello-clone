@@ -37,12 +37,7 @@ public class BoardSecurityEvaluator {
       return false;
     }
 
-    Boolean isPending = boardMemberRepository.existsByBoardIdAndUserIdAndRole(boardId, user.getId(), BoardRole.PENDING);
-    if (isPending) {
-      return false;
-    }
-
-    return boardMemberRepository.existsByBoardIdAndUserId(boardId, user.getId());
+    return boardMemberRepository.existsByBoardIdAndUserIdAndRoleNot(boardId, user.getId(), BoardRole.PENDING);
   }
 
   public boolean hasBoardOwnerAccess(UUID boardId) {

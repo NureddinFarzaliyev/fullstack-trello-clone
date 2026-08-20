@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +25,7 @@ public interface BoardMemberRepository extends JpaRepository<BoardMemberEntity, 
 
   Optional<BoardMemberEntity> findByBoardIdAndUserIdAndRole(UUID boardId, Long userId, BoardRole role);
 
+  @EntityGraph(attributePaths = { "user" })
   List<BoardMemberEntity> findAllByBoardId(UUID boardId);
 
   List<BoardMemberEntity> findAllByUserId(Long userId);
@@ -38,6 +40,8 @@ public interface BoardMemberRepository extends JpaRepository<BoardMemberEntity, 
   Boolean existsByBoardIdAndUserId(UUID boardId, Long userId);
 
   Boolean existsByBoardIdAndUserIdAndRole(UUID boardId, Long userId, BoardRole role);
+
+  Boolean existsByBoardIdAndUserIdAndRoleNot(UUID boardId, Long userId, BoardRole role);
 
   void deleteByIdAndBoardId(Long id, UUID boardId);
 

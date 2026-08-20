@@ -14,7 +14,6 @@ import com.frzlyv.trello_clone.features.board.domain.BoardDto;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
 import com.frzlyv.trello_clone.features.board.domain.BoardWithRoleDto;
 import com.frzlyv.trello_clone.features.boardMember.BoardMemberRepository;
-import com.frzlyv.trello_clone.features.boardMember.BoardMemberService;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardMemberEntity;
 import com.frzlyv.trello_clone.features.boardMember.domain.BoardRole;
 import com.frzlyv.trello_clone.features.user.domain.UserEntity;
@@ -69,17 +68,14 @@ public class BoardServiceImpl implements BoardService {
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
   public BoardWithRoleDto getBoardById(UUID boardId, UserEntity user) {
-    BoardEntity boardEntity = boardRepository.findById(boardId)
-        .orElseThrow(() -> new EntityNotFoundException("Board not found."));
-
     BoardMemberEntity boardMemberEntity = boardMemberRepository
         .findByUserIdAndBoardIdWithBoard(user.getId(), boardId)
         .orElseThrow(() -> new EntityNotFoundException("Board member not found."));
 
     return BoardWithRoleDto.builder()
-        .id(boardEntity.getId())
-        .title(boardEntity.getTitle())
-        .isPublic(boardEntity.getIsPublic())
+        .id(boardMemberEntity.getBoard().getId())
+        .title(boardMemberEntity.getBoard().getTitle())
+        .isPublic(boardMemberEntity.getBoard().getIsPublic())
         .role(boardMemberEntity.getRole())
         .build();
   }

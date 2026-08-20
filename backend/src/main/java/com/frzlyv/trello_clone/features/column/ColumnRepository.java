@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,6 +20,7 @@ import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 @Repository
 public interface ColumnRepository extends JpaRepository<ColumnEntity, Long> {
 
+  @EntityGraph(attributePaths = { "cards" })
   Page<ColumnEntity> findAllByBoardIdOrderByPositionAsc(UUID boardId, Pageable pageable);
 
   Optional<ColumnEntity> findFirstByBoardIdOrderByPositionDesc(UUID boardId);
