@@ -70,6 +70,8 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     simpMessagingTemplate.convertAndSend("/queue/invitations/" + body.getEmail(),
         new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.INVITATION_CREATE));
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.MEMBER_CREATE));
 
     return savedBoardMemberDto;
   }
@@ -81,9 +83,12 @@ public class BoardMemberServiceImpl implements BoardMemberService {
     BoardMemberEntity boardMemberEntity = boardMemberRepository.findById(boardMemberId)
         .orElseThrow(() -> new EntityNotFoundException("Board member not found"));
 
+    BoardMemberDto boardMemberDto = modelMapper.toDto(boardMemberEntity);
+
     simpMessagingTemplate.convertAndSend("/queue/invitations/" + boardMemberEntity.getUser().getEmail(),
-        new BoardEventPayloadDto<BoardMemberDto>(modelMapper.toDto(boardMemberEntity),
-            BoardEventPayloadType.INVITATION_DELETE));
+        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.INVITATION_DELETE));
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
 
     boardMemberRepository.deleteByIdAndBoardId(boardMemberId, boardId);
   }
@@ -95,7 +100,12 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     boardMemberEntity.setRole(BoardRole.EDITOR);
     BoardMemberEntity saved = boardMemberRepository.save(boardMemberEntity);
-    return modelMapper.toDto(saved);
+    BoardMemberDto boardMemberDto = modelMapper.toDto(saved);
+
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_PATCH));
+
+    return boardMemberDto;
   }
 
 }

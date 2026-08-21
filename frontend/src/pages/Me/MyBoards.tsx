@@ -6,8 +6,7 @@ import SectionHeader from "../../shared/ui/section/SectionHeader";
 import BoardCard from "./BoardCard";
 import { useSubscription } from "react-stomp-hooks";
 import { boardQueryKeys } from "../../api/queries/queryKeys";
-
-const invitationEvents = ["INVITATION_CREATE", "INVITATION_DELETE"];
+import { invitationEvents } from "../../shared/utils/websocket";
 
 const MyBoards = ({ email }: { email: string }) => {
   const { data, isPending } = useBoards();

@@ -7,6 +7,10 @@ import FadeIn from "../../shared/ui/animation/FadeIn";
 
 import InviteMember from "./InviteMember";
 import RevokeMember from "./RevokeMember";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSubscription } from "react-stomp-hooks";
+import { boardQueryKeys } from "../../api/queries/queryKeys";
+import { memberEvents } from "../../shared/utils/websocket";
 
 const BoardMembers = ({
   boardId,
@@ -16,6 +20,17 @@ const BoardMembers = ({
   isOwner: boolean;
 }) => {
   const { data, isPending } = useBoardMembers(boardId);
+
+  const queryClient = useQueryClient();
+
+  useSubscription(`/topic/board/${boardId}`, (message) => {
+    const event = JSON.parse(message.body);
+    if (memberEvents.includes(event.type)) {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.members(boardId),
+      });
+    }
+  });
 
   return (
     <div>
