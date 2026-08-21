@@ -29,9 +29,6 @@ const register = async (body: RegisterRequestBody) => {
     body,
   });
 
-  console.log("Register response data:", data);
-  console.log("Register response error:", error);
-
   if (error) handleQueryError(error);
   return data;
 };
@@ -57,6 +54,7 @@ export const useLogout = () => {
         queryKey: authQueryKeys.all,
         exact: false,
       });
+      queryClient.clear();
     },
   });
 };
