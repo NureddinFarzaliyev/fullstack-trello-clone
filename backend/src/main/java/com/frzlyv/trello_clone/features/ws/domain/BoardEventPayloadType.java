@@ -8,4 +8,6 @@ public enum BoardEventPayloadType {
   CARD_PATCH,
   CARD_DELETE,
   CARD_CREATE,
+  INVITATION_CREATE,
+  INVITATION_DELETE,
 }
