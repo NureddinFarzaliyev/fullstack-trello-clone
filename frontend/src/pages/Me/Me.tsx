@@ -30,7 +30,7 @@ const Me = () => {
           color="error"
         />
       </div>
-      <MyBoards />
+      <MyBoards email={data?.email ?? ""} />
     </Section>
   );
 };

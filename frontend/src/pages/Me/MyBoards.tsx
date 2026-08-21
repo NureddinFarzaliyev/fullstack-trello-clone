@@ -1,11 +1,27 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useBoards } from "../../api/queries/useBoardsQuery";
 import FadeIn from "../../shared/ui/animation/FadeIn";
 import HorizontalFullSpinner from "../../shared/ui/loading/HorizontalFullSpinner";
 import SectionHeader from "../../shared/ui/section/SectionHeader";
 import BoardCard from "./BoardCard";
+import { useSubscription } from "react-stomp-hooks";
+import { boardQueryKeys } from "../../api/queries/queryKeys";
 
-const MyBoards = () => {
+const invitationEvents = ["INVITATION_CREATE", "INVITATION_DELETE"];
+
+const MyBoards = ({ email }: { email: string }) => {
   const { data, isPending } = useBoards();
+
+  const queryClient = useQueryClient();
+
+  useSubscription(`/queue/invitations/${email}`, (message) => {
+    const event = JSON.parse(message.body);
+    if (invitationEvents.includes(event.type)) {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.all,
+      });
+    }
+  });
 
   return (
     <div>

@@ -6,13 +6,33 @@ import { ChevronLeft } from "lucide-react";
 import FadeIn from "../../shared/ui/animation/FadeIn";
 import Columns from "./Column/Columns";
 import BoardMembers from "./BoardMembers";
-import { useBoardSocket } from "../../shared/hooks/useBoardSocket";
+import { useSubscription } from "react-stomp-hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { boardQueryKeys } from "../../api/queries/queryKeys";
+
+const boardEvents = [
+  "COLUMN_PATCH",
+  "COLUMN_CREATE",
+  "COLUMN_DELETE",
+  "CARD_PATCH",
+  "CARD_CREATE",
+  "CARD_DELETE",
+];
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isPending } = useBoard(id ?? "");
 
-  useBoardSocket(id ?? "");
+  const queryClient = useQueryClient();
+
+  useSubscription(`/topic/board/${id}`, (message) => {
+    const event = JSON.parse(message.body);
+    if (boardEvents.includes(event.type)) {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.boardById(id ?? ""),
+      });
+    }
+  });
 
   return isPending ? (
     <FullPageSpinner />
