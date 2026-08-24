@@ -89,6 +89,35 @@ export const useAcceptBoardInvite = () => {
   });
 };
 
+const declineBoardInvite = async (boardId: string) => {
+  const { data, error } = await openApiClient.POST(
+    "/api/v1/boards/{boardId}/members/decline",
+    {
+      params: {
+        path: {
+          boardId,
+        },
+      },
+    },
+  );
+
+  if (error || !data) handleQueryError(error);
+  return data;
+};
+
+export const useDeclineBoardInvite = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (boardId: string) => declineBoardInvite(boardId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: boardQueryKeys.all,
+      });
+    },
+  });
+};
+
 const revokeMember = async (boardId: string, boardMemberId: number) => {
   const { data } = await openApiClient.DELETE(
     "/api/v1/boards/{boardId}/members/{boardMemberId}",

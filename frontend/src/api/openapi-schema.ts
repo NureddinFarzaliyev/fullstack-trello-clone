@@ -20,6 +20,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/boards/{boardId}/members/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["declineBoardInvitation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/boards/{boardId}/members/accept": {
         parameters: {
             query?: never;
@@ -263,6 +279,7 @@ export interface components {
             position?: number;
             /** Format: date-time */
             due?: string;
+            completed?: boolean;
             /** Format: int64 */
             columnId?: number;
         };
@@ -307,6 +324,7 @@ export interface components {
             due?: string;
             /** Format: int64 */
             position?: number;
+            completed?: boolean;
         };
         BoardWithRoleDto: {
             /** Format: uuid */
@@ -408,6 +426,28 @@ export interface operations {
                 "application/json": components["schemas"]["CreateBoardMemberDto"];
             };
         };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BoardMemberDto"];
+                };
+            };
+        };
+    };
+    declineBoardInvitation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                boardId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description OK */
             200: {

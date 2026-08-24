@@ -1,14 +1,25 @@
 import { Link } from "react-router";
 import type { BoardWithRole } from "../../api/openapi-types";
 import { ClockIcon, CrownIcon } from "lucide-react";
-import { useAcceptBoardInvite } from "../../api/queries/useMembersQuery";
+import {
+  useAcceptBoardInvite,
+  useDeclineBoardInvite,
+} from "../../api/queries/useMembersQuery";
 
 const BoardCard = ({ board }: { board?: BoardWithRole }) => {
-  const { mutate, isPending } = useAcceptBoardInvite();
+  const { mutate: accept, isPending: isAccepting } = useAcceptBoardInvite();
+  const { mutate: decline, isPending: isDeclining } = useDeclineBoardInvite();
 
-  const onClick = () => {
+  const isPending = isAccepting || isDeclining;
+
+  const onAccept = () => {
     if (isPending || !board) return;
-    mutate(board?.id || "");
+    accept(board?.id || "");
+  };
+
+  const onDecline = () => {
+    if (isPending || !board) return;
+    decline(board?.id || "");
   };
 
   if (!board) return;
@@ -19,10 +30,17 @@ const BoardCard = ({ board }: { board?: BoardWithRole }) => {
         <span> You've been invited to "{board.title || ""}".</span>
         <button
           disabled={isPending}
-          onClick={onClick}
+          onClick={onAccept}
           className="underline cursor-pointer"
         >
-          {isPending ? "Accepting..." : "Click here to accept"}
+          {isPending ? "Accepting..." : "Accept"}
+        </button>
+        <button
+          disabled={isPending}
+          onClick={onDecline}
+          className="underline cursor-pointer"
+        >
+          {isPending ? "Declining..." : "Decline"}
         </button>
       </div>
     </div>
