@@ -3,6 +3,9 @@ import type { Card } from "../../../../api/openapi-types";
 import UpdateCard from "./UpdateCard";
 import DeleteCard from "./DeleteCard";
 import type { DraggableProvided } from "@hello-pangea/dnd";
+import classNames from "classnames";
+import CompleteCard from "./CompleteCard";
+import { useState } from "react";
 
 const CardItem = ({
   card,
@@ -13,12 +16,20 @@ const CardItem = ({
   boardId: string;
   provided?: DraggableProvided;
 }) => {
+  const [completedState, setCompletedState] = useState(card.completed);
+
   return (
     <div className="bg-(--surface-a10) py-2 px-3 flex flex-col gap-2 my-1">
       <div className="flex gap-1 group justify-between items-center">
         <div className="flex gap-2 items-center">
-          <h4>{card.title}</h4>
-          <div className="group-hover:opacity-60 opacity-0 transition duration-100 shrink-0">
+          <h4
+            className={classNames(
+              completedState ? "line-through opacity-60" : "",
+            )}
+          >
+            {card.title}
+          </h4>
+          <div className="group-hover:opacity-60 opacity-0 transition duration-100">
             <UpdateCard
               boardId={boardId}
               columnId={card.columnId ?? 0}
@@ -28,6 +39,13 @@ const CardItem = ({
               boardId={boardId}
               columnId={card.columnId ?? 0}
               cardId={card.id ?? 0}
+            />
+            <CompleteCard
+              boardId={boardId}
+              columnId={card.columnId ?? 0}
+              cardId={card.id ?? 0}
+              completed={completedState}
+              setCompleted={setCompletedState}
             />
           </div>
         </div>
