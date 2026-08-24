@@ -89,6 +89,9 @@ public class CardServiceImpl implements CardService {
     if (body.getDue() != null) {
       card.setDue(body.getDue());
     }
+    if (body.getCompleted() != null) {
+      card.setCompleted(body.getCompleted());
+    }
 
     Long newPos = body.getPosition();
     Long prevPos = card.getPosition();

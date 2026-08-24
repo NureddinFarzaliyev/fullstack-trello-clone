@@ -21,5 +21,6 @@ public class UpdateCardRequestDto {
   Long columnId;
   Date due;
   Long position;
+  Boolean completed;
 
 }

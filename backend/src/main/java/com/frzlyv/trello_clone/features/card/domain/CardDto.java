@@ -21,6 +21,7 @@ public class CardDto {
   String description;
   Long position;
   Date due;
+  Boolean completed;
   Long columnId;
 
 }

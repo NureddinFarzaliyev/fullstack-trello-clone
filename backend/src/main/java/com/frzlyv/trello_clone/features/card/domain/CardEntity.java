@@ -44,6 +44,9 @@ public class CardEntity {
 
   Date due;
 
+  @Builder.Default
+  Boolean completed = false;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "column_id", nullable = false)
   ColumnEntity column;
