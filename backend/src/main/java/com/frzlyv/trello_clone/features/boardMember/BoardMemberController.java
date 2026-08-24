@@ -39,6 +39,11 @@ public class BoardMemberController {
     return boardMemberService.acceptBoardMemberInvite(boardId, user);
   }
 
+  @PostMapping("/decline")
+  BoardMemberDto declineBoardInvitation(@PathVariable UUID boardId, @AuthenticationPrincipal UserEntity user) {
+    return boardMemberService.declineBoardMemberInvite(boardId, user);
+  }
+
   @PostMapping
   BoardMemberDto createBoardMember(@PathVariable UUID boardId, @Valid @RequestBody CreateBoardMemberDto body) {
     return boardMemberService.createBoardMember(boardId, body);

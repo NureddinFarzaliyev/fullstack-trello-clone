@@ -48,4 +48,6 @@ public interface BoardMemberRepository extends JpaRepository<BoardMemberEntity, 
 
   void deleteByIdAndBoardId(Long id, UUID boardId);
 
+  Optional<BoardMemberEntity> deleteByBoardIdAndUserIdAndRole(UUID boardId, Long userId, BoardRole role);
+
 }

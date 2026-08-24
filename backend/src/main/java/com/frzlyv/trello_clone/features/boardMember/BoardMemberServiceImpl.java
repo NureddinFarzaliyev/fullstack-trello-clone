@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
 import com.frzlyv.trello_clone.features.board.BoardRepository;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
@@ -104,6 +105,20 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
         new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_PATCH));
+
+    return boardMemberDto;
+  }
+
+  @Override
+  @Transactional
+  public BoardMemberDto declineBoardMemberInvite(UUID boardId, UserEntity user) {
+    BoardMemberEntity boardMemberEntity = boardMemberRepository.deleteByBoardIdAndUserIdAndRole(boardId, user.getId(),
+        BoardRole.PENDING).orElseThrow(() -> new EntityNotFoundException("Invitation not found."));
+
+    BoardMemberDto boardMemberDto = modelMapper.toDto(boardMemberEntity);
+
+    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
 
     return boardMemberDto;
   }

@@ -20,4 +20,6 @@ public interface BoardMemberService {
 
   BoardMemberDto acceptBoardMemberInvite(UUID boardId, UserEntity user);
 
+  BoardMemberDto declineBoardMemberInvite(UUID boardId, UserEntity user);
+
 }
