@@ -35,16 +35,14 @@ public class CardServiceImpl implements CardService {
   @Override
   @PreAuthorize("@boardSecurity.hasColumnAccess(#boardId, #columnId)")
   public CardDto createCard(UUID boardId, Long columnId, CreateCardRequestDto body) {
-
-    ColumnEntity column = columnRepository.findById(columnId)
-        .orElseThrow(() -> new EntityNotFoundException("Column not found."));
+    ColumnEntity columnProxy = columnRepository.getReferenceById(columnId);
 
     Long maxPos = cardRepository.findFirstByColumnIdOrderByPositionDesc(columnId)
         .map(CardEntity::getPosition)
         .orElse(0l);
 
     CardEntity card = CardEntity.builder()
-        .column(column)
+        .column(columnProxy)
         .title(body.getTitle())
         .description(body.getDescription())
         .position(maxPos + 1)

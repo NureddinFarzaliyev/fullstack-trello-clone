@@ -2,6 +2,7 @@ package com.frzlyv.trello_clone.features.column;
 
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -38,8 +39,7 @@ public class ColumnServiceImpl implements ColumnService {
   @Override
   @PreAuthorize("@boardSecurity.hasBoardAccess(#boardId)")
   public ColumnDto createColumn(UserEntity userEntity, UUID boardId, CreateColumnRequestDto body) {
-    BoardEntity board = boardRepository.findById(boardId)
-        .orElseThrow(() -> new EntityNotFoundException());
+    BoardEntity board = boardRepository.getReferenceById(boardId);
 
     Long nextPosition = columnRepository.findFirstByBoardIdOrderByPositionDesc(boardId)
         .map(ColumnEntity::getPosition)
@@ -51,7 +51,12 @@ public class ColumnServiceImpl implements ColumnService {
         .position(nextPosition)
         .build();
 
-    ColumnEntity savedColumnEntity = columnRepository.save(columnEntity);
+    ColumnEntity savedColumnEntity;
+    try {
+      savedColumnEntity = columnRepository.save(columnEntity);
+    } catch (DataIntegrityViolationException e) {
+      throw new EntityNotFoundException("Board does not exist");
+    }
 
     ColumnDto savedColumnDto = modelMapper.toDto(savedColumnEntity);
 

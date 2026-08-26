@@ -3,10 +3,10 @@ package com.frzlyv.trello_clone.features.boardMember;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.web.method.annotation.ModelAttributeMethodProcessor;
 
 import com.frzlyv.trello_clone.features.board.BoardRepository;
 import com.frzlyv.trello_clone.features.board.domain.BoardEntity;
@@ -52,21 +52,22 @@ public class BoardMemberServiceImpl implements BoardMemberService {
     UserEntity userEntity = userRepository.findByEmail(body.getEmail())
         .orElseThrow(() -> new EntityNotFoundException("This user does not exist."));
 
-    Boolean alreadyExists = boardMemberRepository.existsByBoardIdAndUserId(boardId, userEntity.getId());
-    if (alreadyExists) {
-      throw new UserAlreadyExistsException("This user is already a member.");
-    }
-
-    BoardEntity board = boardRepository.findById(boardId)
-        .orElseThrow(() -> new EntityNotFoundException("This board does not exist."));
+    BoardEntity boardProxy = boardRepository.getReferenceById(boardId);
 
     BoardMemberEntity boardMember = BoardMemberEntity.builder()
         .user(userEntity)
-        .board(board)
+        .board(boardProxy)
         .role(BoardRole.PENDING)
         .build();
 
-    BoardMemberEntity savedBoardMember = boardMemberRepository.save(boardMember);
+    BoardMemberEntity savedBoardMember;
+
+    try {
+      savedBoardMember = boardMemberRepository.save(boardMember);
+    } catch (DataIntegrityViolationException e) {
+      throw new UserAlreadyExistsException("This user is already a member.");
+    }
+
     BoardMemberDto savedBoardMemberDto = modelMapper.toDto(savedBoardMember);
 
     simpMessagingTemplate.convertAndSend("/queue/invitations/" + body.getEmail(),

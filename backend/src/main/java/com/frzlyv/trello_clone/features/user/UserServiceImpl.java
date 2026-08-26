@@ -1,6 +1,7 @@
 package com.frzlyv.trello_clone.features.user;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,21 +37,18 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public UserDto register(RegisterDto registerDto) {
-    if (userRepository.existsByEmail(registerDto.getEmail())) {
-      throw new UserAlreadyExistsException("User with this email already exists.");
-    }
-
-    if (userRepository.existsByUsername(registerDto.getUsername())) {
-      throw new UserAlreadyExistsException("User with this username already exists.");
-    }
-
     UserEntity userEntity = UserEntity.builder()
         .username(registerDto.getUsername())
         .email(registerDto.getEmail())
         .password(passwordEncoder.encode(registerDto.getPassword()))
         .build();
 
-    UserEntity savedUser = userRepository.save(userEntity);
+    UserEntity savedUser;
+    try {
+      savedUser = userRepository.save(userEntity);
+    } catch (DataIntegrityViolationException e) {
+      throw new UserAlreadyExistsException("User with this email or username already exists.");
+    }
 
     eventPublisher.publishEvent(new UserRegisterEvent(this, savedUser));
 
