@@ -19,6 +19,7 @@ import com.frzlyv.trello_clone.features.user.domain.UserEntity;
 import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadDto;
 import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadType;
 import com.frzlyv.trello_clone.shared.Mapper;
+import com.frzlyv.trello_clone.shared.utils.TransactionUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -81,8 +82,10 @@ public class ColumnServiceImpl implements ColumnService {
         .orElse(null);
     if (column != null) {
       columnRepository.shiftPositionsLeft(boardId, column.getPosition());
-      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-          new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.COLUMN_DELETE));
+      TransactionUtils.registerAfterCommit(() -> {
+        simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+            new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.COLUMN_DELETE));
+      });
     }
   }
 
@@ -120,8 +123,10 @@ public class ColumnServiceImpl implements ColumnService {
 
     ColumnDto savedColumnDto = modelMapper.toDto(columnEntity);
 
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-        new BoardEventPayloadDto<ColumnDto>(savedColumnDto, BoardEventPayloadType.COLUMN_PATCH));
+    TransactionUtils.registerAfterCommit(() -> {
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<ColumnDto>(savedColumnDto, BoardEventPayloadType.COLUMN_PATCH));
+    });
 
     return savedColumnDto;
   }

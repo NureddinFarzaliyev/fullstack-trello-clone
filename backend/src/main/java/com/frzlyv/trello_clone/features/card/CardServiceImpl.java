@@ -15,6 +15,7 @@ import com.frzlyv.trello_clone.features.column.domain.ColumnEntity;
 import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadDto;
 import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadType;
 import com.frzlyv.trello_clone.shared.Mapper;
+import com.frzlyv.trello_clone.shared.utils.TransactionUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -66,8 +67,10 @@ public class CardServiceImpl implements CardService {
     CardEntity card = cardRepository.deleteByIdAndColumnId(cardId, columnId).orElse(null);
     if (card != null) {
       cardRepository.shiftPositionsLeft(columnId, card.getPosition());
-      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-          new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.CARD_DELETE));
+      TransactionUtils.registerAfterCommit(() -> {
+        simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+            new BoardEventPayloadDto<Long>(1l, BoardEventPayloadType.CARD_DELETE));
+      });
     }
   }
 
@@ -160,8 +163,10 @@ public class CardServiceImpl implements CardService {
     CardEntity savedCard = cardRepository.save(card);
     CardDto savedCardDto = modelMapper.toDto(savedCard);
 
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-        new BoardEventPayloadDto<CardDto>(savedCardDto, BoardEventPayloadType.CARD_PATCH));
+    TransactionUtils.registerAfterCommit(() -> {
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<CardDto>(savedCardDto, BoardEventPayloadType.CARD_PATCH));
+    });
 
     return savedCardDto;
   }

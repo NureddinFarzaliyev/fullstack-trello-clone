@@ -20,6 +20,7 @@ import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadDto;
 import com.frzlyv.trello_clone.features.ws.domain.BoardEventPayloadType;
 import com.frzlyv.trello_clone.shared.Mapper;
 import com.frzlyv.trello_clone.shared.exceptions.UserAlreadyExistsException;
+import com.frzlyv.trello_clone.shared.utils.TransactionUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -70,10 +71,12 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     BoardMemberDto savedBoardMemberDto = modelMapper.toDto(savedBoardMember);
 
-    simpMessagingTemplate.convertAndSend("/queue/invitations/" + body.getEmail(),
-        new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.INVITATION_CREATE));
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-        new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.MEMBER_CREATE));
+    TransactionUtils.registerAfterCommit(() -> {
+      simpMessagingTemplate.convertAndSend("/queue/invitations/" + body.getEmail(),
+          new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.INVITATION_CREATE));
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.MEMBER_CREATE));
+    });
 
     return savedBoardMemberDto;
   }
@@ -87,10 +90,12 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     BoardMemberDto boardMemberDto = modelMapper.toDto(boardMemberEntity);
 
-    simpMessagingTemplate.convertAndSend("/queue/invitations/" + boardMemberEntity.getUser().getEmail(),
-        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.INVITATION_DELETE));
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
+    TransactionUtils.registerAfterCommit(() -> {
+      simpMessagingTemplate.convertAndSend("/queue/invitations/" + boardMemberEntity.getUser().getEmail(),
+          new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.INVITATION_DELETE));
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
+    });
 
     boardMemberRepository.deleteByIdAndBoardId(boardMemberId, boardId);
   }
@@ -118,8 +123,10 @@ public class BoardMemberServiceImpl implements BoardMemberService {
 
     BoardMemberDto boardMemberDto = modelMapper.toDto(boardMemberEntity);
 
-    simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
-        new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
+    TransactionUtils.registerAfterCommit(() -> {
+      simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
+          new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));
+    });
 
     return boardMemberDto;
   }
