@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playball&display=swap");
+
 @import "tailwindcss";
 @plugin "daisyui";
 
@@ -55,6 +58,8 @@
 
 @theme {
   --animate-fade-in: fade-in 0.5s;
+  --font-display: "Cormorant Garamond", serif;
+  --font-display-alt: "Playball", serif;
 }
 
 @keyframes fade-in {
