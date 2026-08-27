@@ -6,6 +6,8 @@
 
 This project is a full-stack Trello clone which is a real-time collaborative task board.
 
+![overview](./overview.gif)
+
 ### Features
 
 - User authentication and authorization
