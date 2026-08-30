@@ -14,12 +14,16 @@ const BoardCard = ({ board }: { board?: BoardWithRole }) => {
 
   const onAccept = () => {
     if (isPending || !board) return;
-    accept(board?.id || "");
+    accept({
+      boardId: board?.id || "",
+    });
   };
 
   const onDecline = () => {
     if (isPending || !board) return;
-    decline(board?.id || "");
+    decline({
+      boardId: board?.id || "",
+    });
   };
 
   if (!board) return;

@@ -12,7 +12,14 @@ const InviteMember = ({ boardId }: { boardId: string }) => {
   const onInvite = () => {
     if (email) {
       inviteMember(
-        { boardId, email },
+        {
+          path: {
+            boardId,
+          },
+          body: {
+            email,
+          },
+        },
         {
           onSuccess: () => {
             addToast({

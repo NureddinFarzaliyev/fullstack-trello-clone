@@ -21,7 +21,9 @@ const boardEvents = [
 
 const Board = () => {
   const { id } = useParams<{ id: string }>();
-  const { data, isPending } = useBoard(id ?? "");
+  const { data, isPending } = useBoard({
+    boardId: id ?? "",
+  });
 
   const queryClient = useQueryClient();
 

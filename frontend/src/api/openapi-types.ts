@@ -33,3 +33,34 @@ export type UpdateCardRequestBody =
 
 export type CreateCardRequestBody =
   components["schemas"]["CreateCardRequestDto"];
+
+export type InviteMemberRequestBody =
+  components["schemas"]["CreateBoardMemberDto"];
+
+// Path Params
+
+export type GetBoardMembersPathParams =
+  paths["/api/v1/boards/{boardId}/members"]["get"]["parameters"]["path"];
+
+export type InviteMemberPathParams =
+  paths["/api/v1/boards/{boardId}/members"]["post"]["parameters"]["path"];
+
+export type AcceptBoardInvitePathParams =
+  paths["/api/v1/boards/{boardId}/members/accept"]["post"]["parameters"]["path"];
+
+export type DeclineBoardInvitePathParams =
+  paths["/api/v1/boards/{boardId}/members/decline"]["post"]["parameters"]["path"];
+
+export type RevokeMemberPathParams =
+  paths["/api/v1/boards/{boardId}/members/{boardMemberId}"]["delete"]["parameters"]["path"];
+
+export type GetBoardColumnsPathParams =
+  paths["/api/v1/boards/{boardId}/columns"]["get"]["parameters"]["path"];
+
+export type GetBoardPathParams =
+  paths["/api/v1/boards/{boardId}"]["get"]["parameters"]["path"];
+
+// Query Params
+
+export type GetBoardColumnsQueryParams =
+  paths["/api/v1/boards/{boardId}/columns"]["get"]["parameters"]["query"];

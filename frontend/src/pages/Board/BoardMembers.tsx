@@ -19,7 +19,7 @@ const BoardMembers = ({
   boardId: string;
   isOwner: boolean;
 }) => {
-  const { data, isPending } = useBoardMembers(boardId);
+  const { data, isPending } = useBoardMembers({ boardId });
 
   const queryClient = useQueryClient();
 

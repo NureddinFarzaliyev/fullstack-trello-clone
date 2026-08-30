@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { handleQueryError } from "../../shared/utils/errors/errorHandler";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
+import type { GetBoardPathParams } from "../openapi-types";
 
 const getDefaultBoard = async () => {
   const { data, error } = await openApiClient.GET("/api/v1/boards/default");
@@ -31,12 +32,10 @@ export const useBoards = () => {
   });
 };
 
-const getBoardById = async (boardId: string) => {
+const getBoardById = async (path: GetBoardPathParams) => {
   const { data, error } = await openApiClient.GET("/api/v1/boards/{boardId}", {
     params: {
-      path: {
-        boardId,
-      },
+      path,
     },
   });
 
@@ -44,10 +43,10 @@ const getBoardById = async (boardId: string) => {
   return data;
 };
 
-export const useBoard = (boardId: string) => {
+export const useBoard = (path: GetBoardPathParams) => {
   return useQuery({
-    queryKey: boardQueryKeys.boardById(boardId),
-    queryFn: () => getBoardById(boardId),
-    enabled: boardId !== "",
+    queryKey: boardQueryKeys.boardById(path.boardId),
+    queryFn: () => getBoardById(path),
+    enabled: path.boardId !== "",
   });
 };
