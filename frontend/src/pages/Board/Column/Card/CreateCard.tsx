@@ -23,8 +23,10 @@ const CreateCard = ({
   const onSubmit = () => {
     mutate(
       {
-        boardId,
-        columnId,
+        path: {
+          boardId,
+          columnId,
+        },
         body: cardDetails,
       },
       {

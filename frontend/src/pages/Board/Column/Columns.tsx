@@ -1,6 +1,6 @@
 import { useBoardColumns } from "../../../api/queries/useColumnsQuery";
 import HorizontalFullSpinner from "../../../shared/ui/loading/HorizontalFullSpinner";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import InfiniteScrollTrigger from "../../../shared/ui/infiniteScroll/InfiniteScrollTrigger";
 import { useIntersectionObserver } from "../../../shared/hooks/useIntersectionObserver";
 import FadeIn from "../../../shared/ui/animation/FadeIn";
@@ -18,7 +18,9 @@ const Columns = ({ id }: { id: string }) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useBoardColumns(id ?? "");
+  } = useBoardColumns({
+    boardId: id ?? "",
+  });
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +67,10 @@ const Columns = ({ id }: { id: string }) => {
             if (result.source && result.destination) {
               if (type === "column") {
                 updateColumn({
-                  boardId: id ?? "",
-                  columnId: draggedItemId,
+                  path: {
+                    boardId: id ?? "",
+                    columnId: draggedItemId,
+                  },
                   body: { position: droppedIndex },
                 });
                 setColumns((prevColumns) => {
@@ -83,9 +87,11 @@ const Columns = ({ id }: { id: string }) => {
                 });
               } else if (type === "card") {
                 updateCard({
-                  boardId: id ?? "",
-                  columnId: sourceColumnId,
-                  cardId: draggedItemId,
+                  path: {
+                    boardId: id ?? "",
+                    columnId: sourceColumnId,
+                    cardId: draggedItemId,
+                  },
                   body: {
                     position: droppedIndex,
                     columnId: droppedColumnId,

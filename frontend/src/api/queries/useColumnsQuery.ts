@@ -8,12 +8,18 @@ import { DEFAULT_PAGE_SIZE } from "../../shared/utils/pagination";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
 import type {
-  Column,
+  CreateColumnPathParams,
   CreateColumnRequestBody,
+  DeleteColumnPathParams,
+  GetBoardColumnsPathParams,
+  UpdateColumnPathParams,
   UpdateColumnRequestBody,
 } from "../openapi-types";
 
-const getBoardColumns = async (boardId: string, page: number) => {
+const getBoardColumns = async (
+  path: GetBoardColumnsPathParams,
+  page: number,
+) => {
   const { data, error } = await openApiClient.GET(
     "/api/v1/boards/{boardId}/columns",
     {
@@ -24,9 +30,7 @@ const getBoardColumns = async (boardId: string, page: number) => {
             size: DEFAULT_PAGE_SIZE,
           },
         },
-        path: {
-          boardId,
-        },
+        path,
       },
     },
   );
@@ -35,11 +39,11 @@ const getBoardColumns = async (boardId: string, page: number) => {
   return data;
 };
 
-export const useBoardColumns = (boardId: string) => {
+export const useBoardColumns = (path: GetBoardColumnsPathParams) => {
   return useInfiniteQuery({
-    queryKey: boardQueryKeys.boardColumns(boardId),
+    queryKey: boardQueryKeys.boardColumns(path.boardId),
     initialPageParam: 0,
-    queryFn: ({ pageParam = 0 }) => getBoardColumns(boardId, pageParam),
+    queryFn: ({ pageParam = 0 }) => getBoardColumns(path, pageParam),
     getNextPageParam: (lastPage) => {
       if (lastPage.last) return undefined;
       const lastPageNumber = lastPage?.pageable?.pageNumber;
@@ -51,18 +55,14 @@ export const useBoardColumns = (boardId: string) => {
 };
 
 const updateColumn = async (
-  boardId: string,
-  columnId: number,
+  path: UpdateColumnPathParams,
   body: UpdateColumnRequestBody,
 ) => {
   const { data, error } = await openApiClient.PATCH(
     "/api/v1/boards/{boardId}/columns/{columnId}",
     {
       params: {
-        path: {
-          boardId,
-          columnId,
-        },
+        path,
       },
       body,
     },
@@ -77,14 +77,12 @@ export const useUpdateColumn = () => {
 
   return useMutation({
     mutationFn: ({
-      boardId,
-      columnId,
+      path,
       body,
     }: {
-      boardId: string;
-      columnId: number;
+      path: UpdateColumnPathParams;
       body: UpdateColumnRequestBody;
-    }) => updateColumn(boardId, columnId, body),
+    }) => updateColumn(path, body),
     onSuccess: (variables) => {
       queryClient.invalidateQueries({
         queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),
@@ -93,14 +91,15 @@ export const useUpdateColumn = () => {
   });
 };
 
-const createColumn = async (boardId: string, body: CreateColumnRequestBody) => {
+const createColumn = async (
+  path: CreateColumnPathParams,
+  body: CreateColumnRequestBody,
+) => {
   const { data, error } = await openApiClient.POST(
     "/api/v1/boards/{boardId}/columns",
     {
       params: {
-        path: {
-          boardId,
-        },
+        path,
       },
       body,
     },
@@ -115,12 +114,12 @@ export const useCreateColumn = () => {
 
   return useMutation({
     mutationFn: ({
-      boardId,
+      path,
       body,
     }: {
-      boardId: string;
+      path: CreateColumnPathParams;
       body: CreateColumnRequestBody;
-    }) => createColumn(boardId, body),
+    }) => createColumn(path, body),
     onSuccess: (variables) => {
       queryClient.invalidateQueries({
         queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),
@@ -129,21 +128,12 @@ export const useCreateColumn = () => {
   });
 };
 
-const deleteColumn = async ({
-  boardId,
-  columnId,
-}: {
-  boardId: string;
-  columnId: number;
-}) => {
+const deleteColumn = async (path: DeleteColumnPathParams) => {
   const { error } = await openApiClient.DELETE(
     "/api/v1/boards/{boardId}/columns/{columnId}",
     {
       params: {
-        path: {
-          boardId,
-          columnId,
-        },
+        path,
       },
     },
   );
@@ -155,13 +145,7 @@ export const useDeleteColumn = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      boardId,
-      columnId,
-    }: {
-      boardId: string;
-      columnId: number;
-    }) => deleteColumn({ boardId, columnId }),
+    mutationFn: (path: DeleteColumnPathParams) => deleteColumn(path),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: boardQueryKeys.boardColumns(variables.boardId ?? ""),

@@ -2,25 +2,24 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { handleQueryError } from "../../shared/utils/errors/errorHandler";
 import type {
   Column,
+  CreateCardPathParams,
   CreateCardRequestBody,
+  DeleteCardPathParams,
+  UpdateCardPathParams,
   UpdateCardRequestBody,
 } from "../openapi-types";
 import { openApiClient } from "../openApiClient";
 import { boardQueryKeys } from "./queryKeys";
 
 const createCard = async (
-  boardId: string,
-  columnId: number,
+  path: CreateCardPathParams,
   body: CreateCardRequestBody,
 ) => {
   const { data, error } = await openApiClient.POST(
     "/api/v1/boards/{boardId}/columns/{columnId}/cards",
     {
       params: {
-        path: {
-          boardId,
-          columnId,
-        },
+        path,
       },
       body,
     },
@@ -35,37 +34,29 @@ export const useCreateCard = () => {
 
   return useMutation({
     mutationFn: ({
-      boardId,
-      columnId,
+      path,
       body,
     }: {
-      boardId: string;
-      columnId: number;
+      path: CreateCardPathParams;
       body: CreateCardRequestBody;
-    }) => createCard(boardId, columnId, body),
+    }) => createCard(path, body),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: boardQueryKeys.boardColumns(variables.boardId),
+        queryKey: boardQueryKeys.boardColumns(variables.path.boardId),
       });
     },
   });
 };
 
 const updateCard = async (
-  boardId: string,
-  columnId: number,
-  cardId: number,
+  path: UpdateCardPathParams,
   body: UpdateCardRequestBody,
 ) => {
   const { data, error } = await openApiClient.PATCH(
     "/api/v1/boards/{boardId}/columns/{columnId}/cards/{cardId}",
     {
       params: {
-        path: {
-          boardId,
-          columnId,
-          cardId,
-        },
+        path,
       },
       body,
     },
@@ -80,38 +71,26 @@ export const useUpdateCard = () => {
 
   return useMutation({
     mutationFn: ({
-      boardId,
-      columnId,
-      cardId,
+      path,
       body,
     }: {
-      boardId: string;
-      columnId: number;
-      cardId: number;
+      path: UpdateCardPathParams;
       body: UpdateCardRequestBody;
-    }) => updateCard(boardId, columnId, cardId, body),
+    }) => updateCard(path, body),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: boardQueryKeys.boardColumns(variables.boardId),
+        queryKey: boardQueryKeys.boardColumns(variables.path.boardId),
       });
     },
   });
 };
 
-const deleteCard = async (
-  boardId: string,
-  columnId: number,
-  cardId: number,
-) => {
+const deleteCard = async (path: DeleteCardPathParams) => {
   const { error } = await openApiClient.DELETE(
     "/api/v1/boards/{boardId}/columns/{columnId}/cards/{cardId}",
     {
       params: {
-        path: {
-          boardId,
-          columnId,
-          cardId,
-        },
+        path,
       },
     },
   );
@@ -123,15 +102,7 @@ export const useDeleteCard = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      boardId,
-      columnId,
-      cardId,
-    }: {
-      boardId: string;
-      columnId: number;
-      cardId: number;
-    }) => deleteCard(boardId, columnId, cardId),
+    mutationFn: (path: DeleteCardPathParams) => deleteCard(path),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: boardQueryKeys.boardColumns(variables.boardId),

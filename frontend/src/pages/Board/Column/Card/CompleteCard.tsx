@@ -20,9 +20,11 @@ const CompleteCard = ({
 
   const onSubmit = () => {
     mutate({
-      boardId,
-      columnId,
-      cardId,
+      path: {
+        boardId,
+        columnId,
+        cardId,
+      },
       body: {
         completed: !compltedState,
       },

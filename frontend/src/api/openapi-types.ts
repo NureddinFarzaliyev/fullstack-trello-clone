@@ -60,7 +60,20 @@ export type GetBoardColumnsPathParams =
 export type GetBoardPathParams =
   paths["/api/v1/boards/{boardId}"]["get"]["parameters"]["path"];
 
-// Query Params
+export type CreateCardPathParams =
+  paths["/api/v1/boards/{boardId}/columns/{columnId}/cards"]["post"]["parameters"]["path"];
 
-export type GetBoardColumnsQueryParams =
-  paths["/api/v1/boards/{boardId}/columns"]["get"]["parameters"]["query"];
+export type UpdateCardPathParams =
+  paths["/api/v1/boards/{boardId}/columns/{columnId}/cards/{cardId}"]["patch"]["parameters"]["path"];
+
+export type DeleteCardPathParams =
+  paths["/api/v1/boards/{boardId}/columns/{columnId}/cards/{cardId}"]["delete"]["parameters"]["path"];
+
+export type UpdateColumnPathParams =
+  paths["/api/v1/boards/{boardId}/columns/{columnId}"]["patch"]["parameters"]["path"];
+
+export type CreateColumnPathParams =
+  paths["/api/v1/boards/{boardId}/columns"]["post"]["parameters"]["path"];
+
+export type DeleteColumnPathParams =
+  paths["/api/v1/boards/{boardId}/columns/{columnId}"]["delete"]["parameters"]["path"];

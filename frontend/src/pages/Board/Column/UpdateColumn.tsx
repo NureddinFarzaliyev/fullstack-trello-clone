@@ -16,8 +16,7 @@ const UpdateColumn = ({
 
   const onSubmit = async () => {
     mutate({
-      boardId,
-      columnId,
+      path: { boardId, columnId },
       body: {
         title: columnName,
       },

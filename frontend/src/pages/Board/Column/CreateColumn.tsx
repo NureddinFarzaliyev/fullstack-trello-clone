@@ -10,7 +10,7 @@ const CreateColumn = ({ boardId }: { boardId: string }) => {
   const { mutate, isPending } = useCreateColumn();
 
   const onSubmit = async () => {
-    mutate({ boardId, body: { title: columnName } });
+    mutate({ path: { boardId }, body: { title: columnName } });
     setColumnName("");
   };
 

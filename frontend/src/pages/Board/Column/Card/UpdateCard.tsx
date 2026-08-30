@@ -23,9 +23,11 @@ const UpdateCard = ({
 
   const onSubmit = async () => {
     mutate({
-      boardId,
-      columnId,
-      cardId,
+      path: {
+        boardId,
+        columnId,
+        cardId,
+      },
       body: cardDetails,
     });
   };
