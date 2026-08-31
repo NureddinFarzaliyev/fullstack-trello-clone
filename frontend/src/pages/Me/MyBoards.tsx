@@ -13,7 +13,7 @@ const MyBoards = ({ email }: { email: string }) => {
 
   const queryClient = useQueryClient();
 
-  useSubscription(`/queue/invitations/${email}`, (message) => {
+  useSubscription(`/user/queue/invitations`, (message) => {
     const event = JSON.parse(message.body);
     if (invitationEvents.includes(event.type)) {
       queryClient.invalidateQueries({

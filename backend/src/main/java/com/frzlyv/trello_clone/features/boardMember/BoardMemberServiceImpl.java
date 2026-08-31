@@ -72,7 +72,8 @@ public class BoardMemberServiceImpl implements BoardMemberService {
     BoardMemberDto savedBoardMemberDto = modelMapper.toDto(savedBoardMember);
 
     TransactionUtils.registerAfterCommit(() -> {
-      simpMessagingTemplate.convertAndSend("/queue/invitations/" + body.getEmail(),
+      System.out.println("Sending invitation to user: " + userEntity.getUsername());
+      simpMessagingTemplate.convertAndSendToUser(userEntity.getUsername(), "/queue/invitations",
           new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.INVITATION_CREATE));
       simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
           new BoardEventPayloadDto<BoardMemberDto>(savedBoardMemberDto, BoardEventPayloadType.MEMBER_CREATE));
@@ -91,7 +92,8 @@ public class BoardMemberServiceImpl implements BoardMemberService {
     BoardMemberDto boardMemberDto = modelMapper.toDto(boardMemberEntity);
 
     TransactionUtils.registerAfterCommit(() -> {
-      simpMessagingTemplate.convertAndSend("/queue/invitations/" + boardMemberEntity.getUser().getEmail(),
+      simpMessagingTemplate.convertAndSendToUser(boardMemberDto.getUser().getUsername(),
+          "/queue/invitations",
           new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.INVITATION_DELETE));
       simpMessagingTemplate.convertAndSend("/topic/board/" + boardId,
           new BoardEventPayloadDto<BoardMemberDto>(boardMemberDto, BoardEventPayloadType.MEMBER_DELETE));

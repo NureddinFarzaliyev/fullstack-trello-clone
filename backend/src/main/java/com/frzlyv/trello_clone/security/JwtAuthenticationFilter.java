@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -55,7 +56,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return;
     }
 
-    username = jwtService.extractUsername(jwt);
+    try {
+      username = jwtService.extractUsername(jwt);
+    } catch (JwtException e) {
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
