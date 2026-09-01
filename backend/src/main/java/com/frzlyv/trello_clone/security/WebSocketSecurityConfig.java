@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -14,7 +17,10 @@ import org.springframework.messaging.support.ChannelInterceptor;
  */
 @Configuration
 @EnableWebSocketSecurity
+@RequiredArgsConstructor
 public class WebSocketSecurityConfig {
+
+  private final BoardSubscriptionAuthorizationManager boardSubscriptionAuthorizationManager;
 
   @Bean
   AuthorizationManager<Message<?>> messageAuthorizationManager(
@@ -25,7 +31,8 @@ public class WebSocketSecurityConfig {
             SimpMessageType.UNSUBSCRIBE, SimpMessageType.OTHER)
         .permitAll()
         .simpDestMatchers("/app/**").authenticated()
-        .simpSubscribeDestMatchers("/user/queue/**", "/topic/**").authenticated()
+        .simpSubscribeDestMatchers("/user/queue/**").authenticated()
+        .simpSubscribeDestMatchers("/topic/board/{boardId}").access(boardSubscriptionAuthorizationManager)
         .anyMessage().denyAll();
 
     return messages.build();
