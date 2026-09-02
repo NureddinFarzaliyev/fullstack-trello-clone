@@ -1,6 +1,11 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./openapi-schema";
 
+function getCsrfToken(): string | null {
+  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export const openApiClient = createClient<paths>({
   baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
   credentials: "include",
@@ -18,5 +23,15 @@ export const openApiClient = createClient<paths>({
     });
 
     return searchParams.toString();
+  },
+});
+
+openApiClient.use({
+  async onRequest({ request }) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      request.headers.set("X-XSRF-TOKEN", csrfToken);
+    }
+    return request;
   },
 });

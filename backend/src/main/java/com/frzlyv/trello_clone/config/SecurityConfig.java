@@ -14,10 +14,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.frzlyv.trello_clone.security.CsrfCookieFilter;
 import com.frzlyv.trello_clone.security.JwtAuthenticationFilter;
 
 /**
@@ -36,9 +40,16 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+    CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+    requestHandler.setCsrfRequestAttributeName(null);
+
     http
         .cors(cors -> cors.configurationSource(configurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(csrf -> csrf
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(requestHandler))
+        .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/v1/auth/**").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
@@ -65,7 +76,6 @@ public class SecurityConfig {
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
     configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));

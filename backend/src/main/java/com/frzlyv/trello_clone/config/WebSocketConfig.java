@@ -7,7 +7,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import com.frzlyv.trello_clone.security.CustomHandshakeHandler;
-import com.frzlyv.trello_clone.security.SecurityContextHandshakeInterceptor;
 
 import lombok.RequiredArgsConstructor;
 
