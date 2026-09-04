@@ -1,10 +1,6 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./openapi-schema";
-
-function getCsrfToken(): string | null {
-  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
-}
+import { getCsrfToken } from "../shared/utils/csrf";
 
 export const openApiClient = createClient<paths>({
   baseUrl: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
