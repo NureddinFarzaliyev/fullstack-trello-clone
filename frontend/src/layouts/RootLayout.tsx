@@ -10,7 +10,7 @@ const RootLayout = () => {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <StompSessionProvider
-          url={`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"}/ws`}
+          url={`${import.meta.env.VITE_API_BASE_URL || `${window.location.protocol}//${window.location.host}`}/ws`}
         >
           <div className="bg-(--dark-a0) min-h-dvh text-(--light-a0)">
             <Outlet />

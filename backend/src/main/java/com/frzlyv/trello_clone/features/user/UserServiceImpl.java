@@ -68,7 +68,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto me(UserEntity userEntity) {
-    return userMapper.toDto(userEntity);
+    if (userEntity == null) {
+      return null;
+    } else {
+      return userMapper.toDto(userEntity);
+    }
   }
 
 }

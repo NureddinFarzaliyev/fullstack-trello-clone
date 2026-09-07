@@ -51,7 +51,7 @@ public class SecurityConfig {
             .csrfTokenRequestHandler(requestHandler))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/auth/**").permitAll()
+            .requestMatchers("/api/v1/auth/**", "/error").permitAll()
             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
             .requestMatchers("/ws/**").authenticated()
             .anyRequest().authenticated())
@@ -76,7 +76,12 @@ public class SecurityConfig {
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.setAllowedOriginPatterns(List.of("http://localhost:5173"));
+    configuration.setAllowedOriginPatterns(List.of(
+        "http://localhost",
+        "http://localhost:80",
+        "http://localhost:5173",
+        "http://127.0.0.1",
+        "http://127.0.0.1:80"));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowedHeaders(List.of("*"));
     configuration.setAllowCredentials(true);
