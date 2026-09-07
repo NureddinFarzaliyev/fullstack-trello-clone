@@ -8,7 +8,7 @@ import { useSubscription } from "react-stomp-hooks";
 import { boardQueryKeys } from "../../api/queries/queryKeys";
 import { invitationEvents } from "../../shared/utils/websocket";
 
-const MyBoards = ({ email }: { email: string }) => {
+const MyBoards = () => {
   const { data, isPending } = useBoards();
 
   const queryClient = useQueryClient();
