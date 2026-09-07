@@ -28,3 +28,25 @@ This project is a full-stack Trello clone which is a real-time collaborative tas
 - <img src="https://skills.syvixor.com/api/icons?i=tailwindcss" height="24"/> **TailwindCSS** with a UI library is used for styling
 
 ### Installation & Usage
+
+#### Using Docker
+
+- Clone the repository:
+
+```bash
+git clone https://github.com/NureddinFarzaliyev/fullstack-trello-clone.git
+```
+
+- Navigate to the project directory:
+
+```bash
+cd fullstack-trello-clone
+```
+
+- Run the following command to build and start the application using Docker:
+
+```bash
+docker-compose up --build
+```
+
+- Application will be available at `http://127.0.0.1:80`.
